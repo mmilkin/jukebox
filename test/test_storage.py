@@ -4,7 +4,8 @@ import pytest
 from twisted.trial.unittest import TestCase
 import twisted.internet.defer as defer
 
-import jukebox
+import jukebox.storage
+import jukebox.song
 
 
 class IStorage(object):
@@ -19,8 +20,8 @@ class IStorage(object):
 
     @defer.inlineCallbacks
     def test_add_get_song(self):
-        storage = self.make_storage() 
-        song = jukebox.Song(
+        storage = self.make_storage()
+        song = jukebox.song.Song(
             title='song 1',
             album='album 1',
             artist='artist 1',
@@ -33,16 +34,16 @@ class IStorage(object):
 
     @defer.inlineCallbacks
     def test_get_song_missing(self):
-        storage = self.make_storage() 
+        storage = self.make_storage()
 
         with pytest.raises(KeyError):
             yield storage.get_song(-1)
 
     @defer.inlineCallbacks
     def test_multi_add_get(self):
-        storage = self.make_storage() 
+        storage = self.make_storage()
         for i in range(10):
-            song = jukebox.Song(
+            song = jukebox.song.Song(
                 title='song %s' % i,
                 album='album %s' % i,
                 artist='artist %s' % i,
@@ -56,10 +57,10 @@ class IStorage(object):
 
     @defer.inlineCallbacks
     def test_multi_add_get_all(self):
-        storage = self.make_storage() 
+        storage = self.make_storage()
         songs = []
         for i in range(10):
-            song = jukebox.Song(
+            song = jukebox.song.Song(
                 title='song %s' % i,
                 album='album %s' % i,
                 artist='artist %s' % i,
@@ -78,8 +79,8 @@ class IStorage(object):
 
     @defer.inlineCallbacks
     def test_remove_song(self):
-        storage = self.make_storage() 
-        song = jukebox.Song(
+        storage = self.make_storage()
+        song = jukebox.song.Song(
             title='song 1',
             album='album 1',
             artist='artist 1',
@@ -94,4 +95,4 @@ class IStorage(object):
 
 class TestMemoryStorage(IStorage, TestCase):
     def make_storage(self):
-        return jukebox.MemoryStorage()
+        return jukebox.storage.MemoryStorage()
