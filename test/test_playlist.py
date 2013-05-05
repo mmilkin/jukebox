@@ -1,4 +1,4 @@
-import jukebox.song 
+import jukebox.song
 
 
 def song_assert(song1, song2):
@@ -63,6 +63,7 @@ def test_advance():
     playlist.advance()
     assert playlist.cur is None
 
+
 def test_playlist_listener():
     playlist = jukebox.song.Playlist()
     song = None
@@ -92,3 +93,26 @@ def test_playlist_listener():
 
     song = None
     playlist.advance()
+
+
+def test_iter():
+    playlist = jukebox.song.Playlist()
+    song1 = jukebox.song.Song(
+        title='song 1',
+        album='album 1',
+        artist='artist 1',
+        path='path 1',
+    )
+    playlist.add_song(song1)
+    song2 = jukebox.song.Song(
+        title='song 2',
+        album='album 2',
+        artist='artist 2',
+        path='path 2',
+    )
+    playlist.add_song(song2)
+
+    song_list = list(playlist)
+
+    assert len(song_list) == 1
+    song_assert(song_list[0], song2)

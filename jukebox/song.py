@@ -16,6 +16,9 @@ class Playlist(object):
         self._list = []
         self._listeners = []
 
+    def __iter__(self):
+        return iter(self._list)
+
     def add_song(self, song):
         self._list.append(song)
         if not self.cur:
