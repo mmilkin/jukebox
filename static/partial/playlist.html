@@ -1,0 +1,10 @@
+<div ng-controller="playlistCtl" class="playlist">
+    <div class="now-playing">
+        {{ current.title }} - {{current.artist}} - {{ current.album }}
+    </div>
+    <ol class="up-comming">
+        <li ng-repeat="song in songs">
+            {{ song.title }} - {{song.artist}} - {{ song.album }}
+        </li>
+    </ol>
+</div>

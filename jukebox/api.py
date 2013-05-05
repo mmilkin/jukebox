@@ -28,15 +28,16 @@ class API(object):
             'artist': song.artist,
         }
 
-    @app.route('/api/songs', methods=['GET'])
+    @app.route('/songs', methods=['GET'])
     @defer.inlineCallbacks
     def all_songs(self, request):
+        print 'all_songs'
         request.setHeader('Content-Type', 'application/json')
         songs = yield self.storage.get_all_songs()
         data = {'songs': [self.format_song(s) for s in songs]}
         defer.returnValue(json.dumps(data))
 
-    @app.route('/api/playlist', methods=['GET'])
+    @app.route('/playlist', methods=['GET'])
     def get_playlist(self, request):
         request.setHeader('Content-Type', 'application/json')
         data = {

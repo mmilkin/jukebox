@@ -1,0 +1,16 @@
+<table ng-controller="songListCtl">
+    <thead>
+        <tr>
+            <td><a href="" ng-click="sort = 'title'; reverse = !reverse">Title</a></td>
+            <td><a href="" ng-click="sort = 'artist'; reverse = !reverse">Artist</a></td>
+            <td><a href="" ng-click="sort = 'album'; reverse = !reverse">Album</a></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="song in songs|orderBy:sort:reverse">
+            <td>{{ song.title }}</td>
+            <td>{{ song.artist }}</td>
+            <td>{{ song.album }}</td>
+        </tr>
+    </tbody>
+</table>
