@@ -1,0 +1,4 @@
+*.pyc
+jukebox.egg-info/*
+twistd.log
+twistd.pid
