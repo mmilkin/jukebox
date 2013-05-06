@@ -2,10 +2,24 @@
 
 module.exports = function(grunt) {
     var jsFiles = ['app/js/*.js'];
+    var testFiles = ['test/js/*.js'];
 
     grunt.initConfig({
         jshint: {
-            all: jsFiles
+            options: {
+                jshintrc: '.jshintrc'
+            },
+            all: [].concat(jsFiles, testFiles)
+        },
+        karma: {
+            watch: {
+                configFile: 'karma.conf',
+                background: true
+            },
+            once: {
+                configFile: 'karma.conf',
+                singleRun: true,
+            }
         },
         ngtemplates: {
             build: {
@@ -41,16 +55,16 @@ module.exports = function(grunt) {
         watch: {
             templates: {
                 files: 'app/partial/*.html',
-                tasks: ['ngtemplates']
+                tasks: ['ngtemplates', 'concat', 'copy:js']
             },
             scripts: {
-                files: [].concat(jsFiles, ['build/templates.js']),
-                tasks: ['jshint', 'concat', 'copy:js']
+                files: [].concat(jsFiles, testFiles),
+                tasks: ['jshint', 'karma:watch:run', 'concat', 'copy:js']
             },
             html: {
                 files: 'app/*.html',
                 tasks: ['copy:html']
-            }
+            },
         }
     });
 
@@ -58,9 +72,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-karma');
 
-    grunt.registerTask('default', ['jshint', 'ngtemplates', 'concat', 'copy']);
-    grunt.registerTask('prod', ['jshint', 'ngtemplates', 'concat', 'uglify', 'copy:html']);
+    grunt.registerTask('default', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'copy']);
+    grunt.registerTask('prod', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'uglify', 'copy:html']);
+    grunt.registerTask('test-watch', ['karma:watch', 'watch']);
 };

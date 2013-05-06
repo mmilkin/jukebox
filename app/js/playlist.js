@@ -6,7 +6,7 @@
     module.controller('playlistCtl', ['$scope', '$http', function($scope, $http) {
         $http.get('/api/playlist').then(function (result) {
             $scope.current = result.data.current;
-            $scope.songs = result.data.queue || [];
+            $scope.songs = result.data.queue;
         });
     }]);
 })();
