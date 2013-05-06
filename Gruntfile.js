@@ -21,12 +21,21 @@ module.exports = function(grunt) {
         concat: {
             js: {
                 src: [].concat(['app/lib/*.js'], jsFiles, ['build/templates.js']),
-                dest: 'static/app.js'
+                dest: 'build/app.js'
             }
         },
         copy: {
             html: {
                 files: [ { expand: true, cwd:'app/', src: ['*.html'], dest: 'static/' } ]
+            },
+            js: {
+                files: [ { expand: true, cwd:'build/', src: ['app.js'], dest: 'static/' } ]
+            }
+        },
+        uglify: {
+            js: {
+                src: 'build/app.js',
+                dest: 'static/app.js'
             }
         },
         watch: {
@@ -36,7 +45,7 @@ module.exports = function(grunt) {
             },
             scripts: {
                 files: [].concat(jsFiles, ['build/templates.js']),
-                tasks: ['jshint', 'concat', 'copy']
+                tasks: ['jshint', 'concat', 'copy:js']
             },
             html: {
                 files: 'app/*.html',
@@ -50,6 +59,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
     grunt.registerTask('default', ['jshint', 'ngtemplates', 'concat', 'copy']);
+    grunt.registerTask('prod', ['jshint', 'ngtemplates', 'concat', 'uglify', 'copy:html']);
 };
