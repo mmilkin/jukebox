@@ -78,5 +78,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'copy']);
     grunt.registerTask('prod', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'uglify', 'copy:html']);
-    grunt.registerTask('test-watch', ['karma:watch', 'watch']);
+    grunt.registerTask('watch-test', ['karma:watch', 'watch']);
 };
