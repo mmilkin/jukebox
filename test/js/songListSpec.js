@@ -1,11 +1,10 @@
 (function () {
 'use strict';
 
-describe('playlist controllers', function () {
+describe('songList controllers', function () {
+    beforeEach(module('songList'));
 
-    beforeEach(module('playlist'));
-
-    describe('playlist controller', function () {
+    describe('songList controller', function () {
 
         var injected = {};
         beforeEach(inject(function($httpBackend, $rootScope, $controller) {
@@ -19,29 +18,9 @@ describe('playlist controllers', function () {
             injected.$httpBackend.verifyNoOutstandingRequest();
         });
 
-        it('should create "current" model from xhr', function () {
-            injected.$httpBackend.expectGET('/api/playlist').respond(
-                {current: {
-                    pk: 0,
-                    title: 'song 0',
-                    album: 'album 0',
-                    artist: 'artist 0'
-                }});
-            var scope = injected.$rootScope.$new();
-
-            var ctrl = injected.$controller('playlistCtl', {$scope: scope});
-
-            injected.$httpBackend.flush();
-
-            expect(scope.current.pk).toEqual(0);
-            expect(scope.current.title).toEqual('song 0');
-            expect(scope.current.album).toEqual('album 0');
-            expect(scope.current.artist).toEqual('artist 0');
-        });
-
         it('should create the "music" model from xhr', function() {
-            injected.$httpBackend.expectGET('/api/playlist').respond(
-                {queue: [
+            injected.$httpBackend.expectGET('/api/songs').respond(
+                {songs: [
                     {
                         pk: 0,
                         title: 'song 0',
@@ -58,7 +37,7 @@ describe('playlist controllers', function () {
 
             var scope = injected.$rootScope.$new();
 
-            var ctrl = injected.$controller('playlistCtl', {$scope: scope});
+            var ctrl = injected.$controller('songListCtl', {$scope: scope});
 
             injected.$httpBackend.flush();
 
@@ -74,7 +53,6 @@ describe('playlist controllers', function () {
         });
 
     });
-
 });
 
 })();
