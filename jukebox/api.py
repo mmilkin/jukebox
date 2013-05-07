@@ -31,7 +31,6 @@ class API(object):
     @app.route('/songs', methods=['GET'])
     @defer.inlineCallbacks
     def all_songs(self, request):
-        print 'all_songs'
         request.setHeader('Content-Type', 'application/json')
         songs = yield self.storage.get_all_songs()
         data = {'songs': [self.format_song(s) for s in songs]}
