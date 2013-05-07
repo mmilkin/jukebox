@@ -9,7 +9,7 @@
 - pip install -e .
 - npm install .
 - grunt
-- twistd -n web --class=jukebox.resource
+- twistd -n web --class=jukebox.config.resource
 
 ### Running tests etc
 - pip install -r dev\_requirements.txt
