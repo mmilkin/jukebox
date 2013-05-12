@@ -40,3 +40,7 @@ class Playlist(object):
     def _notify(self):
         for listener in self._listeners:
             listener()
+
+    def __repr__(self):
+        songs = ', '.join([repr(s) for s in self])
+        return u'<Playlist [%s]>' % songs

@@ -7,16 +7,12 @@ import twisted.internet.defer as defer
 import jukebox.storage
 import jukebox.song
 
+import util
+
 
 class IStorage(object):
     def make_storage(self):
         raise NotImplementedError()
-
-    def song_assert(self, song1, song2):
-        assert song1.title == song2.title
-        assert song1.album == song2.album
-        assert song1.artist == song2.artist
-        assert song1.path == song2.path
 
     @defer.inlineCallbacks
     def test_add_get_song(self):
@@ -30,7 +26,7 @@ class IStorage(object):
         pk = yield storage.add_song(song)
         song_back = yield storage.get_song(pk)
 
-        self.song_assert(song, song_back)
+        util.song_assert(song, song_back)
 
     @defer.inlineCallbacks
     def test_get_song_missing(self):
@@ -53,7 +49,7 @@ class IStorage(object):
 
         song_back = yield storage.get_song(song.pk)
 
-        self.song_assert(song, song_back)
+        util.song_assert(song, song_back)
 
     @defer.inlineCallbacks
     def test_multi_add_get_all(self):
@@ -75,7 +71,7 @@ class IStorage(object):
         sorted(all_songs, key=operator.attrgetter('pk'))
 
         for song1, song2 in zip(songs, all_songs):
-            self.song_assert(song1, song2)
+            util.song_assert(song1, song2)
 
     @defer.inlineCallbacks
     def test_remove_song(self):

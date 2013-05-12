@@ -15,7 +15,7 @@ class Source(object):
 
     def start_background(self):
         self.lc = LoopingCall(self.process_file)
-        self.lc.start(.1) # TODO: bit rate?
+        self.lc.start(.25) # TODO: bit rate?
 
     def stop_background(self):
         self.lc.stop()
@@ -30,13 +30,13 @@ class Source(object):
 
     def add_client(self, client):
         self.clients.append(client)
-        # TODO: burst some data at the client?
+        # burst some data at the client?
 
     def process_file(self):
         if not self.file:
             return
 
-        data = self.file.read(8192)
+        data = self.file.read(1024 * 8)
         if not data:
             self.file = None
             self.playlist.advance()

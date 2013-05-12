@@ -1,11 +1,5 @@
 import jukebox.song
-
-
-def song_assert(song1, song2):
-    assert song1.title == song2.title
-    assert song1.album == song2.album
-    assert song1.artist == song2.artist
-    assert song1.path == song2.path
+import util
 
 
 def test_add_song():
@@ -17,7 +11,7 @@ def test_add_song():
         path='path 1',
     )
     playlist.add_song(song)
-    song_assert(song, playlist.cur)
+    util.song_assert(song, playlist.cur)
 
 
 def test_add_two_songs():
@@ -29,7 +23,7 @@ def test_add_two_songs():
         path='path 1',
     )
     playlist.add_song(song1)
-    song_assert(song1, playlist.cur)
+    util.song_assert(song1, playlist.cur)
     song2 = jukebox.song.Song(
         title='song 2',
         album='album 2',
@@ -37,7 +31,7 @@ def test_add_two_songs():
         path='path 2',
     )
     playlist.add_song(song2)
-    song_assert(song1, playlist.cur)
+    util.song_assert(song1, playlist.cur)
 
 
 def test_advance():
@@ -57,9 +51,9 @@ def test_advance():
     )
     playlist.add_song(song2)
 
-    song_assert(playlist.cur, song1)
+    util.song_assert(playlist.cur, song1)
     playlist.advance()
-    song_assert(playlist.cur, song2)
+    util.song_assert(playlist.cur, song2)
     playlist.advance()
     assert playlist.cur is None
 
@@ -115,4 +109,4 @@ def test_iter():
     song_list = list(playlist)
 
     assert len(song_list) == 1
-    song_assert(song_list[0], song2)
+    util.song_assert(song_list[0], song2)

@@ -8,6 +8,8 @@ import jukebox.api
 import jukebox.storage
 import jukebox.song
 
+import util
+
 
 class TestAllSongs(TestCase):
     @defer.inlineCallbacks
@@ -178,3 +180,21 @@ def test_get_playlist_current_none():
         'Content-Type', 'application/json'
     )
     assert None == json.loads(json_playlist)['current']
+
+
+def test_add_to_play_list():
+    request = mock.Mock(name='request')
+    request.content.getvalue.return_value = '{"pk": 1}'
+    playlist = jukebox.song.Playlist()
+    storage = jukebox.storage.MemoryStorage()
+    song = jukebox.song.Song(
+        title='song 0',
+        album='album 0',
+        artist='artist 0',
+        path='path 0',
+    )
+    storage.add_song(song)
+    api = jukebox.api.API(playlist=playlist, storage=storage)
+    api.add_to_playlist(request)
+
+    util.song_assert(song, playlist.cur)

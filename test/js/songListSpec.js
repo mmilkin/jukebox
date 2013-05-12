@@ -52,6 +52,21 @@ describe('songList controllers', function () {
             expect(scope.songs[1].artist).toEqual('artist 1');
         });
 
+        it('should POST to /api/playlist/add when play is called', function() {
+            injected.$httpBackend.expectGET('/api/songs').respond({songs: []});
+            injected.$httpBackend.expectPOST(
+                '/api/playlist/add',
+                 '{"pk":333}'
+            ). respond(200);
+
+            var scope = injected.$rootScope.$new();
+            var ctrl = injected.$controller('songListCtl', {$scope: scope});
+
+            scope.play(333);
+
+            injected.$httpBackend.flush();
+        });
+
     });
 });
 

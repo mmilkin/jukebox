@@ -7,5 +7,9 @@
         $http.get('/api/songs').then(function (result) {
             $scope.songs = result.data.songs;
         });
+
+        $scope.play = function (pk) {
+            $http.post('/api/playlist/add', {pk: pk});
+        };
     }]);
 })();

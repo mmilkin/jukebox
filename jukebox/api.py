@@ -44,3 +44,11 @@ class API(object):
             'queue': [self.format_song(s) for s in self.playlist]
         }
         return json.dumps(data)
+
+    @app.route('/playlist/add', methods=['POST'])
+    @defer.inlineCallbacks
+    def add_to_playlist(self, request):
+        pk = int(json.loads(request.content.getvalue())['pk'])
+        song = yield self.storage.get_song(pk)
+        self.playlist.add_song(song)
+        defer.returnValue('')
