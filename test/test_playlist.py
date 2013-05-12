@@ -89,6 +89,28 @@ def test_playlist_listener():
     playlist.advance()
 
 
+def test_playlist_listener_is_weak():
+    playlist = jukebox.song.Playlist()
+    song = None
+
+    class Listener(object):
+        called = False
+        def __call__(self):
+            print 'called'
+            Listener.called = True
+    playlist.add_listener(Listener())
+
+    song1 = jukebox.song.Song(
+        title='song 1',
+        album='album 1',
+        artist='artist 1',
+        path='path 1',
+    )
+    playlist.add_song(song1)
+
+    assert not Listener.called
+
+
 def test_iter():
     playlist = jukebox.song.Playlist()
     song1 = jukebox.song.Song(
