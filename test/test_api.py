@@ -185,16 +185,26 @@ def test_get_playlist_current_none():
 def test_add_to_play_list():
     request = mock.Mock(name='request')
     request.content.getvalue.return_value = '{"pk": 1}'
-    playlist = jukebox.song.Playlist()
-    storage = jukebox.storage.MemoryStorage()
-    song = jukebox.song.Song(
-        title='song 0',
-        album='album 0',
-        artist='artist 0',
-        path='path 0',
-    )
-    storage.add_song(song)
+    playlist = mock.Mock(name='playlist')
+    storage = mock.Mock(name='storage')
+    song = storage.get_song.return_value
+
     api = jukebox.api.API(playlist=playlist, storage=storage)
     api.add_to_playlist(request)
 
-    util.song_assert(song, playlist.cur)
+    storage.get_song.assert_called_with(1)
+    playlist.add_song.assert_called_with(song)
+
+
+class TestTickle(TestCase):
+    @defer.inlineCallbacks
+    def test_tickle(self):
+        request = mock.Mock(name='request')
+        playlist = mock.Mock(name='playlist')
+        def call(l):
+            l()
+        playlist.add_listener.side_effect = call
+
+        api = jukebox.api.API(playlist=playlist, storage=None)
+        result = yield api.tickle(request)
+        assert result == 'playlist'

@@ -52,3 +52,12 @@ class API(object):
         song = yield self.storage.get_song(pk)
         self.playlist.add_song(song)
         defer.returnValue('')
+
+    @app.route('/tickle', methods=['GET'])
+    def tickle(self, request):
+        d = defer.Deferred()
+        def l():
+            d.callback('playlist')
+        d.l = l # This is a hack to keep the l around as long ad d
+        self.playlist.add_listener(l)
+        return d
