@@ -30,7 +30,7 @@ class Source(object):
 
     def add_client(self, client):
         self.clients.append(client)
-        # burst some data at the client?
+        # burst some data at the client or keep latency low?
 
     def process_file(self):
         if not self.file:

@@ -1,0 +1,18 @@
+@playlist-width: 300px;
+
+.calc-width(@exp) {
+    width: -webkit-calc(@exp);
+    width: -moz-calc(@exp);
+    width: calc(@exp);
+}
+
+.playlist {
+    float: left;
+    width: @playlist-width;
+}
+
+.songlist {
+    float: right;
+    .calc-width(~"100% -" @playlist-width);
+    min-width: 500px;
+}

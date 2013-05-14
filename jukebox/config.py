@@ -6,7 +6,8 @@ def make_root_resource():
     from jukebox.song import Song, Playlist
 
     storage = MemoryStorage()
-    scanner = DirScanner(storage, '/Users/armooo/Documents/')
+    #scanner = DirScanner(storage, '/Users/armooo/Documents/')
+    scanner = DirScanner(storage, '/Volumes/more_music/')
     scanner.scan()
     playlist = Playlist()
     api_server = API(storage, playlist)

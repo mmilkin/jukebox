@@ -1,5 +1,3 @@
-import weakref
-
 class Song(object):
     def __init__(self, title, album, artist, path):
         self.pk = None
@@ -16,7 +14,7 @@ class Playlist(object):
     def __init__(self):
         self.cur = None
         self._list = []
-        self._listeners = weakref.WeakSet()
+        self._listeners = set()
 
     def __iter__(self):
         return iter(self._list)
@@ -25,6 +23,7 @@ class Playlist(object):
         self._list.append(song)
         if not self.cur:
             self.advance()
+        self._notify()
 
     def advance(self):
         old_cur = self.cur
@@ -39,8 +38,11 @@ class Playlist(object):
     def add_listener(self, listener):
         self._listeners.add(listener)
 
+    def del_listener(self, listener):
+        self._listeners.remove(listener)
+
     def _notify(self):
-        for listener in self._listeners:
+        for listener in self._listeners.copy():
             listener()
 
     def __repr__(self):

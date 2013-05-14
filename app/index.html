@@ -1,8 +1,10 @@
 <html>
-<head><title>JukeBox</title></head>
+<head>
+    <title>JukeBox</title>
+    <link rel="stylesheet" href="/style.css" type="test/css"/>
+</head>
 <body ng-app="jukebox">
 
-<audio src="/stream" autoplay controls></audio>
 <div ng-include="'/partial/playlist.html'"></div>
 <div ng-include="'/partial/song_list.html'"></div>
 

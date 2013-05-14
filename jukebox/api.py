@@ -58,6 +58,6 @@ class API(object):
         d = defer.Deferred()
         def l():
             d.callback('playlist')
-        d.l = l # This is a hack to keep the l around as long ad d
+            self.playlist.del_listener(l)
         self.playlist.add_listener(l)
         return d

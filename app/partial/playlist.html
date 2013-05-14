@@ -1,4 +1,5 @@
 <div ng-controller="playlistCtl" class="playlist">
+    <audio src="/stream" autoplay controls preload="none"></audio>
     <div class="now-playing">
         {{ current.title }} - {{current.artist}} - {{ current.album }}
     </div>
