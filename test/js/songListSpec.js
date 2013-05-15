@@ -67,6 +67,65 @@ describe('songList controllers', function () {
             injected.$httpBackend.flush();
         });
 
+        it('should reflect a artistShown into a closeArtist', function() {
+            injected.$httpBackend.expectGET('/api/songs').respond({songs: []});
+
+            var scope = injected.$rootScope.$new();
+            var innerScope = scope.$new();
+            var ctrl = injected.$controller('songListCtl', {$scope: scope});
+
+            var fired = false;
+
+            innerScope.$on('closeArtist', function() { fired=true; });
+            innerScope.$emit('artistShown');
+
+            expect(fired).toBeTruthy();
+            injected.$httpBackend.flush();
+        });
+
+    });
+
+    describe('artistCtl controller', function () {
+
+        var injected = {};
+        beforeEach(inject(function($httpBackend, $rootScope, $controller) {
+            injected.$rootScope = $rootScope;
+            injected.$controller = $controller;
+        }));
+
+        it('should emit artistShown when toggled', function() {
+            var scope = injected.$rootScope.$new();
+            var innerScope = scope.$new();
+            var ctrl = injected.$controller(
+                'artistCtl',
+                {$scope: innerScope}
+            );
+
+            var fired = false;
+            scope.$on('artistShown', function() {
+                fired = true;
+            });
+
+            innerScope.toggleShown();
+
+            expect(fired).toBeTruthy();
+        });
+
+        it('should not be shown on closeArtist', function() {
+            var scope = injected.$rootScope.$new();
+            var innerScope = scope.$new();
+            var ctrl = injected.$controller(
+                'artistCtl',
+                {$scope: innerScope}
+            );
+
+            innerScope.shown = true;
+
+            scope.$broadcast('closeArtist');
+
+            expect(innerScope.shown).toBeFalsy();
+        });
+
     });
 });
 

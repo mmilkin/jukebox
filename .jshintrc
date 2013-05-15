@@ -17,6 +17,7 @@
     "undef": true,
 
     "globals": {
+        "_": true,
         "afterEach": true,
         "angular": true,
         "beforeEach": true,

@@ -1,4 +1,6 @@
 def make_root_resource():
+    from twisted.internet import reactor
+
     from jukebox.api import API
     from jukebox.httpd import HTTPd, Stream, Source
     from jukebox.storage import MemoryStorage
@@ -8,7 +10,7 @@ def make_root_resource():
     storage = MemoryStorage()
     #scanner = DirScanner(storage, '/Users/armooo/Documents/')
     scanner = DirScanner(storage, '/Volumes/more_music/')
-    scanner.scan()
+    reactor.callInThread(scanner.scan)
     playlist = Playlist()
     api_server = API(storage, playlist)
     source = Source(playlist)

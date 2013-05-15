@@ -6,9 +6,19 @@
     width: calc(@exp);
 }
 
+.calc-height(@exp) {
+    height: -webkit-calc(@exp);
+    height: -moz-calc(@exp);
+    height: calc(@exp);
+}
+
 .playlist {
-    float: left;
+    position: fixed;
+    top: 0px;
+    left: 0px;
     width: @playlist-width;
+    .calc-height(100%);
+    overflow: auto;
 }
 
 .songlist {

@@ -34,7 +34,7 @@ module.exports = function(grunt) {
         },
         concat: {
             js: {
-                src: [].concat(['app/lib/*.js'], jsFiles, ['build/templates.js']),
+                src: [].concat(['app/lib/angular.js', 'app/lib/*.js'], jsFiles, ['build/templates.js']),
                 dest: 'build/app.js'
             }
         },
