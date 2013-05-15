@@ -45,7 +45,7 @@ def test_source_start_new_file_none():
     source = jukebox.httpd.Source(playlist)
     source.file = 'foo'
 
-    source.start_new_file()
+    source.start_new_file('NEW_CUR')
 
     assert None == source.file
 
@@ -56,7 +56,7 @@ def test_source_start_new_file(open):
     source = jukebox.httpd.Source(playlist)
     source.file = None
 
-    source.start_new_file()
+    source.start_new_file('NEW_CUR')
 
     assert open.return_value == source.file
     open.assert_called_with(playlist.cur.path, 'rb')
@@ -92,7 +92,7 @@ def test_source_start_new_file(open):
     source.file = None
     client = mock.Mock(name='client')
 
-    source.start_new_file()
+    source.start_new_file('NEW_CUR')
     source.add_client(client)
     source.process_file()
 

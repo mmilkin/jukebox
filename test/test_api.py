@@ -202,7 +202,7 @@ class TestTickle(TestCase):
         request = mock.Mock(name='request')
         playlist = mock.Mock(name='playlist')
         def call(l):
-            l()
+            l('FOO')
         playlist.add_listener.side_effect = call
 
         api = jukebox.api.API(playlist=playlist, storage=None)

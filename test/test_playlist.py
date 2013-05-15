@@ -58,11 +58,13 @@ def test_advance():
     assert playlist.cur is None
 
 
-def test_playlist_listener():
+def test_playlist_listener_new_cur():
     playlist = jukebox.song.Playlist()
     song = None
 
-    def listener():
+    def listener(event):
+        if event != 'NEW_CUR':
+            return
         assert playlist.cur == song
     playlist.add_listener(listener)
 

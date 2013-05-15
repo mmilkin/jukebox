@@ -10,7 +10,6 @@ class Source(object):
         self.playlist = playlist
         self.clients = []
         self.file = None
-        self.start_new_file()
         self.playlist.add_listener(self.start_new_file)
 
     def start_background(self):
@@ -20,7 +19,9 @@ class Source(object):
     def stop_background(self):
         self.lc.stop()
 
-    def start_new_file(self):
+    def start_new_file(self, event):
+        if event != 'NEW_CUR':
+            return
         if not self.playlist.cur:
             self.file = None
             return

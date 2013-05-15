@@ -23,7 +23,7 @@ class Playlist(object):
         self._list.append(song)
         if not self.cur:
             self.advance()
-        self._notify()
+        self._notify('PLAYLIST_CHANGE')
 
     def advance(self):
         old_cur = self.cur
@@ -31,9 +31,7 @@ class Playlist(object):
             self.cur = self._list.pop(0)
         except IndexError:
             self.cur = None
-
-        if old_cur != self.cur:
-            self._notify()
+        self._notify('NEW_CUR')
 
     def add_listener(self, listener):
         self._listeners.add(listener)
@@ -41,9 +39,9 @@ class Playlist(object):
     def del_listener(self, listener):
         self._listeners.remove(listener)
 
-    def _notify(self):
+    def _notify(self, event):
         for listener in self._listeners.copy():
-            listener()
+            listener(event)
 
     def __repr__(self):
         songs = ', '.join([repr(s) for s in self])

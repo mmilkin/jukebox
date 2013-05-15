@@ -56,7 +56,7 @@ class API(object):
     @app.route('/tickle', methods=['GET'])
     def tickle(self, request):
         d = defer.Deferred()
-        def l():
+        def l(event):
             d.callback('playlist')
             self.playlist.del_listener(l)
         self.playlist.add_listener(l)
