@@ -3,7 +3,6 @@
     <ul ng-controller="songListCtl">
         <li ng-controller="artistCtl"
             ng-repeat="(artist, songs) in artists"
-            id="artist-{{ $index }}"
         >
             <p ng-click="toggleShown()">{{ artist }}</p>
             <div ui-if="shown">

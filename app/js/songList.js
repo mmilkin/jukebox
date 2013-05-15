@@ -27,8 +27,6 @@
         $scope.toggleShown = function() {
             if ( !$scope.shown ) {
                 $scope.$emit('artistShown');
-                $location.hash($scope.$index);
-                $anchorScroll();
             }
             $scope.shown = !$scope.shown;
         };
