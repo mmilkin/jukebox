@@ -37,7 +37,7 @@ class MemoryStorage(object):
 
     def get_all_songs(self):
         d = defer.Deferred()
-        d.callback(self._store.itervalues())
+        d.callback(self._store.copy().itervalues())
         return d
 
     def get_song(self, pk):
