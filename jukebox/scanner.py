@@ -38,9 +38,9 @@ class DirScanner(object):
                 if not music_file:
                     continue
                 self.storage.add_song(jukebox.song.Song(
-                    title=(music_file['title'] + [None])[0],
-                    album=(music_file['album'] + [None])[0],
-                    artist=(music_file['artist'] + [None])[0],
+                    title=(music_file.get('title', []) + [None])[0],
+                    album=(music_file.get('album', []) + [None])[0],
+                    artist=(music_file.get('artist', []) + [None])[0],
                     path=path,
                 ))
 
