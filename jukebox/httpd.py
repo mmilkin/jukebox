@@ -1,49 +1,30 @@
 from twisted.web.static import File
 from twisted.web.resource import Resource
 from twisted.web.server import NOT_DONE_YET
-from twisted.internet.task import LoopingCall
 from klein import Klein
 
 
 class Source(object):
-    def __init__(self, playlist):
+    def __init__(self, playlist, encoder):
         self.playlist = playlist
+        self.encoder = encoder
         self.clients = []
-        self.file = None
-        self.playlist.add_listener(self.start_new_file)
+        self.playlist.add_listener(self.start_new_song)
 
-    def start_background(self):
-        self.lc = LoopingCall(self.process_file)
-        self.lc.start(.25) # TODO: bit rate?
-
-    def stop_background(self):
-        self.lc.stop()
-
-    def start_new_file(self, event):
+    def start_new_song(self, event):
         if event != 'NEW_CUR':
             return
         if not self.playlist.cur:
-            self.file = None
             return
-        if self.file:
-            self.file.close()
-        self.file = open(self.playlist.cur.path, 'rb')
+        self.encoder(
+            song=self.playlist.cur,
+            data_callback=self.send,
+            done_callback=self.playlist.advance,
+        )
 
     def add_client(self, client):
         self.clients.append(client)
         # burst some data at the client or keep latency low?
-
-    def process_file(self):
-        if not self.file:
-            return
-
-        data = self.file.read(1024 * 8)
-        if not data:
-            self.file = None
-            self.playlist.advance()
-            return
-
-        self.send(data)
 
     def send(self, data):
         for client in self.clients:

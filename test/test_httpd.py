@@ -34,37 +34,17 @@ def test_client_send():
     request.write.assert_called_with('foo')
 
 
-def test_source_init_start_file():
+def test_source_init_start_song_callback():
     playlist = mock.Mock(name='playlist', cur=None)
-    source = jukebox.httpd.Source(playlist)
-    playlist.add_listener.assert_called_with(source.start_new_file)
-
-
-def test_source_start_new_file_none():
-    playlist = mock.Mock(name='playlist', cur=None)
-    source = jukebox.httpd.Source(playlist)
-    source.file = 'foo'
-
-    source.start_new_file('NEW_CUR')
-
-    assert None == source.file
-
-
-@mock.patch('__builtin__.open')
-def test_source_start_new_file(open):
-    playlist = mock.Mock(name='playlist')
-    source = jukebox.httpd.Source(playlist)
-    source.file = None
-
-    source.start_new_file('NEW_CUR')
-
-    assert open.return_value == source.file
-    open.assert_called_with(playlist.cur.path, 'rb')
+    encoder = mock.Mock(name='encoder')
+    source = jukebox.httpd.Source(playlist, encoder)
+    playlist.add_listener.assert_called_with(source.start_new_song)
 
 
 def test_add_client_send():
     playlist = mock.Mock(name='playlist', cur=None)
-    source = jukebox.httpd.Source(playlist)
+    encoder = mock.Mock(name='encoder')
+    source = jukebox.httpd.Source(playlist, encoder)
     client = mock.Mock(name='client')
 
     source.add_client(client)
@@ -74,29 +54,38 @@ def test_add_client_send():
     client.send.assert_called_with('foo')
 
 
-def test_process_file_none():
-    playlist = mock.Mock(name='playlist', cur=None)
-    source = jukebox.httpd.Source(playlist)
-    client = mock.Mock(name='client')
-
-    source.add_client(client)
-    source.process_file()
-
-    assert False == client.send.called
-
-
-@mock.patch('__builtin__.open')
-def test_source_start_new_file(open):
+def test_source_new_song():
     playlist = mock.Mock(name='playlist')
-    source = jukebox.httpd.Source(playlist)
-    source.file = None
+    encoder = mock.Mock(name='encoder')
+    source = jukebox.httpd.Source(playlist, encoder)
     client = mock.Mock(name='client')
 
-    source.start_new_file('NEW_CUR')
-    source.add_client(client)
-    source.process_file()
+    source.start_new_song('NEW_CUR')
+    
+    encoder.assert_called_with(
+        song=playlist.cur,
+        data_callback=source.send,
+        done_callback=playlist.advance
+    )
 
-    file = open.return_value
 
-    file.read.assert_called_with(8192)
-    client.send.assert_called_with(file.read.return_value)
+def test_source_not_new_song():
+    playlist = mock.Mock(name='playlist')
+    encoder = mock.Mock(name='encoder')
+    source = jukebox.httpd.Source(playlist, encoder)
+    client = mock.Mock(name='client')
+
+    source.start_new_song('FOO')
+    
+    assert not encoder.called
+
+
+def test_source_new_song_empty_playlist():
+    playlist = mock.Mock(name='playlist', cur=None)
+    encoder = mock.Mock(name='encoder')
+    source = jukebox.httpd.Source(playlist, encoder)
+    client = mock.Mock(name='client')
+
+    source.start_new_song('NEW_CUR')
+    
+    assert not encoder.called
