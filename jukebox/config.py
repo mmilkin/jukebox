@@ -7,12 +7,14 @@ def make_root_resource():
     from jukebox.scanner import DirScanner
     from jukebox.song import Song, Playlist
     from jukebox.encoders import CopyEncoder, GSTEncoder
+    from jukebox.dj import RandomDJ
 
     storage = MemoryStorage()
     scanner = DirScanner(storage, '/Users/armooo/Documents/')
     #scanner = DirScanner(storage, '/Volumes/more_music/')
     reactor.callInThread(scanner.scan)
     playlist = Playlist()
+    dj = RandomDJ(storage, playlist)
     api_server = API(storage, playlist)
     source = Source(playlist, GSTEncoder)
     httpd = HTTPd(api_server.app.resource(), Stream(source))
