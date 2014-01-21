@@ -8,8 +8,6 @@ import jukebox.api
 import jukebox.storage
 import jukebox.song
 
-import util
-
 
 class TestAllSongs(TestCase):
     @defer.inlineCallbacks
@@ -201,6 +199,7 @@ class TestTickle(TestCase):
     def test_tickle(self):
         request = mock.Mock(name='request')
         playlist = mock.Mock(name='playlist')
+
         def call(l):
             l('FOO')
         playlist.add_listener.side_effect = call

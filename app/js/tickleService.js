@@ -4,8 +4,7 @@
 var module = angular.module('tickle', ['ng']);
 
 
-module.factory('tickleService', ['$http', '$rootScope', '$timeout',
-               function($http, $rootScope, $timeout) {
+module.factory('tickleService', function($http, $rootScope, $timeout) {
     var retry = function() {
         $rootScope.$broadcast('tickle');
         wait();
@@ -20,6 +19,6 @@ module.factory('tickleService', ['$http', '$rootScope', '$timeout',
     };
 
     wait();
-}]);
+});
 
 })();

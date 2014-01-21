@@ -35,6 +35,12 @@ module.exports = function(grunt) {
         concat: {
             js: {
                 src: [].concat(['app/lib/angular.js', 'app/lib/*.js'], jsFiles, ['build/templates.js']),
+                dest: 'build/app.concat.js'
+            }
+        },
+        ngmin: {
+            app: {
+                src: 'build/app.concat.js',
                 dest: 'build/app.js'
             }
         },
@@ -77,7 +83,7 @@ module.exports = function(grunt) {
             },
             scripts: {
                 files: [].concat(jsFiles, testFiles),
-                tasks: ['jshint', 'karma:watch:run', 'concat', 'copy:js']
+                tasks: ['jshint', 'karma:watch:run', 'concat', 'ngmin', 'copy:js']
             },
             css: {
                 files: [].concat('app/style.less'),
@@ -98,8 +104,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-ngmin');
 
-    grunt.registerTask('default', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'less:development', 'copy']);
-    grunt.registerTask('prod', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'uglify', 'less:production', 'copy:html']);
+    grunt.registerTask('default', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'ngmin', 'less:development', 'copy']);
+    grunt.registerTask('prod', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'ngmin', 'uglify', 'less:production', 'copy:html']);
     grunt.registerTask('watch-test', ['karma:watch', 'watch']);
 };

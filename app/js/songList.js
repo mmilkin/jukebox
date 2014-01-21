@@ -3,7 +3,7 @@
 
     var module = angular.module('songList', ['ng', 'ui.if']);
 
-    module.controller('songListCtl', ['$scope', '$http', function($scope, $http) {
+    module.controller('songListCtl', function($scope, $http) {
         $http.get('/api/songs').then(function (result) {
             $scope.songs = result.data.songs;
             $scope.artists = _.groupBy($scope.songs, 'artist');
@@ -18,10 +18,9 @@
             $scope.$broadcast('closeArtist');
         });
 
-    }]);
+    });
 
-    module.controller('artistCtl', ['$scope', '$anchorScroll', '$location',
-                      function($scope, $anchorScroll, $location) {
+    module.controller('artistCtl', function($scope, $anchorScroll, $location) {
         $scope.shown = false;
 
         $scope.toggleShown = function() {
@@ -36,6 +35,6 @@
         $scope.$on('closeArtist', function() {
             $scope.shown = false;
         });
-    }]);
+    });
 
 })();

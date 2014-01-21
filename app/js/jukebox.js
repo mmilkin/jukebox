@@ -10,8 +10,8 @@
         'templates'
     ]);
 
-    module.run(['tickleService', function(tickleService) {
+    module.run(function(tickleService) {
         console.log('run');
-    }]);
+    });
 
 })();

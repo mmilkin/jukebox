@@ -3,7 +3,7 @@
 
     var module = angular.module('playlist', ['ng']);
 
-    module.controller('playlistCtl', ['$scope', '$http', function($scope, $http) {
+    module.controller('playlistCtl', function($scope, $http) {
         var load = function() {
             $http.get('/api/playlist').then(function (result) {
                 $scope.current = result.data.current;
@@ -14,5 +14,5 @@
         $scope.$on('tickle', load);
 
         load();
-    }]);
+    });
 })();
