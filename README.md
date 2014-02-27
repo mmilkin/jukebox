@@ -4,7 +4,7 @@
 
 ### Get it running
 - git clone https://github.com/armooo/jukebox.git
-- virtualenv venv
+- virtualenv --system-site-packages venv #  to use a system pygst
 - . env/bin/activate
 - pip install -e .
 - npm install .
