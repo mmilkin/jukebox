@@ -26,7 +26,6 @@ class Playlist(object):
         self._notify('PLAYLIST_CHANGE')
 
     def advance(self):
-        old_cur = self.cur
         try:
             self.cur = self._list.pop(0)
         except IndexError:
@@ -37,7 +36,8 @@ class Playlist(object):
         self._listeners.add(listener)
 
     def del_listener(self, listener):
-        self._listeners.remove(listener)
+        if listener in self._listeners:
+            self._listeners.remove(listener)
 
     def _notify(self, event):
         for listener in self._listeners.copy():
