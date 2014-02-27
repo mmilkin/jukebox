@@ -34,7 +34,10 @@ class DirScanner(object):
         for root, dirs, files in os.walk(self.path):
             for name in files:
                 path = os.path.join(root, name)
-                music_file = mutagen.File(path, easy=True)
+                try:
+                    music_file = mutagen.File(path, easy=True)
+                except:
+                    continue
                 if not music_file:
                     continue
                 self.storage.add_song(jukebox.song.Song(
