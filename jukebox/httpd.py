@@ -26,6 +26,9 @@ class Source(object):
         self.clients.append(client)
         # burst some data at the client or keep latency low?
 
+    def del_client(self, client):
+        self.clients.remove(client)
+
     def send(self, data):
         for client in self.clients:
             client.send(data)
@@ -50,6 +53,11 @@ class Stream(Resource):
 
     def render_GET(self, request):
         client = self.client_factory(request)
+
+        def disconnect(result):
+            self.source.del_client(client)
+
+        request.notifyFinish().addBoth(disconnect)
         self.source.add_client(client)
         return NOT_DONE_YET
 
