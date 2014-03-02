@@ -1,7 +1,6 @@
 from unittest import TestCase
-from mock import patch, Mock, call
+from mock import patch, Mock
 from jukebox.config import make_root_resource
-from jukebox.storage import MemoryStorage
 
 
 class TestConfig(TestCase):
