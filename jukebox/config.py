@@ -1,4 +1,5 @@
 def make_root_resource():
+    import ConfigParser
     from twisted.internet import reactor
 
     from jukebox.api import API
@@ -8,10 +9,15 @@ def make_root_resource():
     from jukebox.song import Song, Playlist
     from jukebox.encoders import CopyEncoder, GSTEncoder
 
+    config = ConfigParser.RawConfigParser()
+    config.read('jukebox.cfg')
+    folders = config.get('base', 'music_folders')
     storage = MemoryStorage()
-    scanner = DirScanner(storage, '/Users/armooo/Documents/')
-    #scanner = DirScanner(storage, '/Volumes/more_music/')
-    reactor.callInThread(scanner.scan)
+    for folder in folders.split(','):
+        print folder
+        scanner = DirScanner(storage, folder)
+        reactor.callInThread(scanner.scan)
+
     playlist = Playlist()
     api_server = API(storage, playlist)
     source = Source(playlist, GSTEncoder)
