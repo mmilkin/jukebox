@@ -14,7 +14,6 @@ def make_root_resource():
     folders = config.get('base', 'music_folders')
     storage = MemoryStorage()
     for folder in folders.split(','):
-        print folder
         scanner = DirScanner(storage, folder)
         reactor.callInThread(scanner.scan)
 
