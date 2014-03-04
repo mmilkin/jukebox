@@ -86,9 +86,21 @@ class IStorage(object):
         yield storage.del_song(song)
 
         with pytest.raises(KeyError):
-          yield storage.get_song(pk)
+            yield storage.get_song(pk)
 
 
 class TestMemoryStorage(IStorage, TestCase):
     def make_storage(self):
         return jukebox.storage.MemoryStorage()
+
+
+class TestMultiPartStorageSingleStorage(IStorage, TestCase):
+    def make_storage(self):
+        return jukebox.storage.MultiPartStorage()
+
+
+# class TestMultiPartStorageMultiStorage(IStorage, TestCase):
+#     def make_storage(self):
+#         return jukebox.storage.MultiPartStorage(
+#             storage=[jukebox.storage.MultiPartStorage(), jukebox.storage.MultiPartStorage()]
+#         )
