@@ -1,7 +1,19 @@
 import itertools
+from gmusicapi import Mobileclient, Webclient
 
 import zope.interface
 import twisted.internet.defer as defer
+from twisted.internet.defer import (
+    Deferred,
+    DeferredList,
+    inlineCallbacks,
+    returnValue
+)
+from jukebox.song import Song, GoogleSong
+
+
+class GoogleAuthenticationError(Exception):
+    pass
 
 
 class IStorage(zope.interface.Interface):
@@ -53,7 +65,7 @@ class MemoryStorage(object):
 
     def add_song(self, song):
         d = defer.Deferred()
-        song.pk = next(self._seq)
+        song.pk = str(next(self._seq))
         self._store[song.pk] = song
         d.callback(song.pk)
         return d
@@ -66,4 +78,36 @@ class MemoryStorage(object):
             d.errback(e)
             return d
         d.callback(None)
+        return d
+
+
+class GooglePlayStorage(MemoryStorage):
+    zope.interface.implements(IStorage)
+
+    def __init__(self, username, password):
+        self._seq = itertools.count(1)
+        self.mobile_client = Mobileclient()
+        self.web_client = Webclient()
+        self.email = username
+        self.password = password
+        self._login()
+        self._store = {song.pk: song for song in self._load_songs()}
+
+    def _login(self):
+        self.mobile_client.login(self.email, self.password)
+        self.web_client.login(self.email, self.password)
+        if not self.mobile_client.is_authenticated() or not self.web_client.is_authenticated():
+            print 'raise the exception'
+            raise GoogleAuthenticationError
+
+    def _load_songs(self):
+        if not self.mobile_client.is_authenticated():
+            raise GoogleAuthenticationError
+        library = [GoogleSong(song, self.web_client) for song in self.mobile_client.get_all_songs()]
+
+        return library
+
+    def get_all_songs(self):
+        d = defer.Deferred()
+        d.callback(self._store.copy().itervalues())
         return d
