@@ -54,7 +54,7 @@ class TestAllSongs(TestCase):
         request = mock.Mock(name='request')
         storage = jukebox.storage.MemoryStorage()
         pks = []
-        for i in range(3):
+        for i in range(1, 4):
             song = jukebox.song.Song(
                 title='song %s' % i,
                 album='album %s' % i,
@@ -63,34 +63,40 @@ class TestAllSongs(TestCase):
             )
             pk = yield storage.add_song(song)
             pks.append(pk)
+
         api = jukebox.api.API(storage=storage)
 
-        result = yield api.all_songs(request)
+        feed_result = yield api.all_songs(request)
 
         request.setHeader.assert_called_with(
             'Content-Type', 'application/json'
         )
 
-        assert result == json.dumps({'songs': [
+        result = json.loads(feed_result)
+
+        self.assertTrue('songs' in result)
+        sorted_result = sorted(result['songs'], key=lambda song: song['pk'])
+
+        assert sorted_result == [
             {
                 'pk': pks[0],
-                'title': 'song 0',
-                'album': 'album 0',
-                'artist': 'artist 0',
-            },
-            {
-                'pk': pks[1],
                 'title': 'song 1',
                 'album': 'album 1',
                 'artist': 'artist 1',
             },
             {
-                'pk': pks[2],
+                'pk': pks[1],
                 'title': 'song 2',
                 'album': 'album 2',
                 'artist': 'artist 2',
             },
-        ]})
+            {
+                'pk': pks[2],
+                'title': 'song 3',
+                'album': 'album 3',
+                'artist': 'artist 3',
+            },
+        ]
 
 
 def test_get_playlist_queue():
