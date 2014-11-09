@@ -53,8 +53,6 @@ class GSTEncoder(object):
     zope.interface.classProvides(IEncoder)
 
     def __init__(self, song, data_callback, done_callback):
-        import gobject
-        gobject.threads_init()
         import pygst
         pygst.require('0.10')
         import gst
@@ -107,9 +105,11 @@ class GSTEncoder(object):
         t = message.type
         if t == gst.MESSAGE_EOS:
             self.encoder.set_state(gst.STATE_NULL)
+            bus.remove_signal_watch()
             self.done_callback()
         elif t == gst.MESSAGE_ERROR:
             self.encoder.set_state(gst.STATE_NULL)
+            bus.remove_signal_watch()
             err, debug = message.parse_error()
             print 'Error: %s' % err, debug
             self.done_callback()

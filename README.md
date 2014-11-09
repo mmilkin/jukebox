@@ -11,6 +11,9 @@
 - grunt
 - twistd -n web --class=jukebox.config.resource
 
+If you are using the GSTEncoder you need to use the glib2 integration reactor
+by passing -r glib2 to twistd.
+
 ### Running tests etc
 - pip install -r dev\_requirements.txt
 - py.test -f
