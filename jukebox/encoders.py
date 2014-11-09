@@ -53,6 +53,8 @@ class GSTEncoder(object):
     zope.interface.classProvides(IEncoder)
 
     def __init__(self, song, data_callback, done_callback):
+        import gobject
+        gobject.threads_init()
         import pygst
         pygst.require('0.10')
         import gst
