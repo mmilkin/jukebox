@@ -1,0 +1,21 @@
+playlist: &playlist
+    !!python/object/apply:jukebox.song.Playlist
+    args:
+
+storage: &storage
+    !!python/object/apply:jukebox.storage.MemoryStorage
+    args:
+
+scanner:
+    !!python/object/apply:jukebox.scanner.DirScanner
+    args:
+        - *storage
+        - '/home/armooo/Music/'
+
+encoder: !!python/name:jukebox.encoders.GSTEncoder
+
+dj:
+    !!python/object/apply:jukebox.dj.RandomDJ
+    args:
+        - *storage
+        - *playlist

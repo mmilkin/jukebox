@@ -1,4 +1,5 @@
 *.pyc
+jukebox.yaml
 twistd.log
 twistd.pid
 node_modules/*
