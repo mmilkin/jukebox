@@ -26,26 +26,45 @@ class IScanner(zope.interface.Interface):
 class DirScanner(object):
     zope.interface.implements(IScanner)
 
-    def __init__(self, storage, path):
+    def __init__(self, storage, *paths):
         self.storage = storage
-        self.path = path
+        self.paths = paths
 
-    def scan(self):
-        for root, dirs, files in os.walk(self.path):
+    def _scan_path(self, path):
+        print path
+        for root, dirs, files in os.walk(path):
             for name in files:
-                path = os.path.join(root, name)
+                file_path = os.path.join(root, name)
                 try:
-                    music_file = mutagen.File(path, easy=True)
+                    music_file = mutagen.File(file_path, easy=True)
                 except:
                     continue
                 if not music_file:
                     continue
+
+                try:
+                    title = music_file['title'][0]
+                except KeyError:
+                    title = None
+                try:
+                    album = music_file['album'][0]
+                except KeyError:
+                    album = None
+                try:
+                    artist = music_file['artist'][0]
+                except KeyError:
+                    artist = None
+
                 self.storage.add_song(jukebox.song.Song(
-                    title=(music_file['title'] + [None])[0],
-                    album=(music_file['album'] + [None])[0],
-                    artist=(music_file['artist'] + [None])[0],
-                    path=path,
+                    title=title,
+                    album=album,
+                    artist=artist,
+                    path=file_path,
                 ))
+
+    def scan(self):
+        for path in self.paths:
+            self._scan_path(path)
 
     def watch(self):
         pass
