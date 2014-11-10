@@ -38,7 +38,7 @@ module.exports = function(grunt) {
                 dest: 'build/app.concat.js'
             }
         },
-        ngmin: {
+        ngAnnotate: {
             app: {
                 src: 'build/app.concat.js',
                 dest: 'build/app.js'
@@ -79,11 +79,11 @@ module.exports = function(grunt) {
         watch: {
             templates: {
                 files: 'app/partial/*.html',
-                tasks: ['ngtemplates', 'concat', 'ngmin', 'copy:js']
+                tasks: ['ngtemplates', 'concat', 'ngAnnotate', 'copy:js']
             },
             scripts: {
                 files: [].concat(jsFiles, testFiles),
-                tasks: ['jshint', 'karma:watch:run', 'concat', 'ngmin', 'copy:js']
+                tasks: ['jshint', 'karma:watch:run', 'concat', 'ngAnnotate', 'copy:js']
             },
             css: {
                 files: [].concat('app/style.less'),
@@ -104,9 +104,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-karma');
-    grunt.loadNpmTasks('grunt-ngmin');
+    grunt.loadNpmTasks('grunt-ng-annotate');
 
-    grunt.registerTask('default', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'ngmin', 'less:development', 'copy']);
-    grunt.registerTask('prod', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'ngmin', 'uglify', 'less:production', 'copy:html']);
+    grunt.registerTask('default', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'ngAnnotate', 'less:development', 'copy']);
+    grunt.registerTask('prod', ['jshint', 'karma:once', 'ngtemplates', 'concat', 'ngAnnotate', 'uglify', 'less:production', 'copy:html']);
     grunt.registerTask('watch-test', ['karma:watch', 'watch']);
 };
