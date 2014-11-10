@@ -19,6 +19,7 @@ module.factory('tickleService', function($http, $rootScope, $timeout) {
     };
 
     wait();
+    return true;
 });
 
 })();
