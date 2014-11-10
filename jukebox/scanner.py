@@ -31,7 +31,6 @@ class DirScanner(object):
         self.paths = paths
 
     def _scan_path(self, path):
-        print path
         for root, dirs, files in os.walk(path):
             for name in files:
                 file_path = os.path.join(root, name)
@@ -44,22 +43,22 @@ class DirScanner(object):
 
                 try:
                     title = music_file['title'][0]
-                except KeyError:
+                except (KeyError, IndexError):
                     title = None
                 try:
                     album = music_file['album'][0]
-                except KeyError:
+                except (KeyError, IndexError):
                     album = None
                 try:
                     artist = music_file['artist'][0]
-                except KeyError:
+                except (KeyError, IndexError):
                     artist = None
 
                 self.storage.add_song(jukebox.song.Song(
                     title=title,
                     album=album,
                     artist=artist,
-                    path=file_path,
+                    uri='file://' + file_path,
                 ))
 
     def scan(self):

@@ -1,3 +1,5 @@
+import urllib2
+
 import zope.interface
 from twisted.internet.task import LoopingCall
 
@@ -32,7 +34,7 @@ class CopyEncoder(object):
         self.song = song
         self.data_callback = data_callback
         self.done_callback = done_callback
-        self.file = open(self.song.path)
+        self.file = urllib2.urlopen(self.song.uri)
 
         self.lc = LoopingCall(self.process_file)
         self.lc.start(.25)  # TODO: bit rate?
@@ -63,11 +65,9 @@ class GSTEncoder(object):
 
         self.encoder = gst.Pipeline('encoder')
 
-        filesrc = gst.element_factory_make('filesrc', 'filesrc')
-        filesrc.set_property('location', self.song.path)
-
-        decodebin = gst.element_factory_make('decodebin', 'decodebin')
-        decodebin.connect("new-decoded-pad", self.on_new_decodebin_pad)
+        decodebin = gst.element_factory_make('uridecodebin', 'uridecodebin')
+        decodebin.set_property('uri', self.song.uri)
+        decodebin.connect('pad-added', self.on_new_pad)
 
         audioconvert = gst.element_factory_make('audioconvert', 'audioconvert')
 
@@ -79,8 +79,7 @@ class GSTEncoder(object):
         sink.set_property('blocksize', 1024 * 32)
         sink.connect('new-buffer', self.data_ready)
 
-        self.encoder.add(filesrc, decodebin, audioconvert, lame, sink)
-        gst.element_link_many(filesrc, decodebin)
+        self.encoder.add(decodebin, audioconvert, lame, sink)
         gst.element_link_many(audioconvert, lame, sink)
 
         self.encoder.set_state(gst.STATE_PAUSED)
@@ -92,7 +91,7 @@ class GSTEncoder(object):
     def data_ready(self, sink):
         self.data_callback(str(sink.emit('pull-buffer')))
 
-    def on_new_decodebin_pad(self, dbin, pad, islast):
+    def on_new_pad(self, dbin, pad):
         import gst
         decodebin = pad.get_parent()
         pipeline = decodebin.get_parent()

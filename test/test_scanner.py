@@ -15,7 +15,7 @@ def test_dir_scanner_scan(walk, File):
         'artist': ['bob'],
     }
     storage = mock.Mock(name='storage')
-    scanner = jukebox.scanner.DirScanner(storage, 'path') 
+    scanner = jukebox.scanner.DirScanner(storage, 'path')
 
     scanner.scan()
 

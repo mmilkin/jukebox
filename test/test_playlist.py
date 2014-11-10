@@ -8,7 +8,7 @@ def test_add_song():
         title='song 1',
         album='album 1',
         artist='artist 1',
-        path='path 1',
+        uri='path 1',
     )
     playlist.add_song(song)
     util.song_assert(song, playlist.cur)
@@ -20,7 +20,7 @@ def test_add_two_songs():
         title='song 1',
         album='album 1',
         artist='artist 1',
-        path='path 1',
+        uri='path 1',
     )
     playlist.add_song(song1)
     util.song_assert(song1, playlist.cur)
@@ -28,7 +28,7 @@ def test_add_two_songs():
         title='song 2',
         album='album 2',
         artist='artist 2',
-        path='path 2',
+        uri='path 2',
     )
     playlist.add_song(song2)
     util.song_assert(song1, playlist.cur)
@@ -40,14 +40,14 @@ def test_advance():
         title='song 1',
         album='album 1',
         artist='artist 1',
-        path='path 1',
+        uri='path 1',
     )
     playlist.add_song(song1)
     song2 = jukebox.song.Song(
         title='song 2',
         album='album 2',
         artist='artist 2',
-        path='path 2',
+        uri='path 2',
     )
     playlist.add_song(song2)
 
@@ -72,7 +72,7 @@ def test_playlist_listener_new_cur():
         title='song 1',
         album='album 1',
         artist='artist 1',
-        path='path 1',
+        uri='path 1',
     )
     song = song1
     playlist.add_song(song1)
@@ -80,7 +80,7 @@ def test_playlist_listener_new_cur():
         title='song 2',
         album='album 2',
         artist='artist 2',
-        path='path 2',
+        uri='path 2',
     )
     playlist.add_song(song2)
 
@@ -105,7 +105,7 @@ def test_playlist_del_listener():
         title='song 1',
         album='album 1',
         artist='artist 1',
-        path='path 1',
+        uri='path 1',
     )
     playlist.add_song(song1)
 
@@ -118,14 +118,14 @@ def test_iter():
         title='song 1',
         album='album 1',
         artist='artist 1',
-        path='path 1',
+        uri='path 1',
     )
     playlist.add_song(song1)
     song2 = jukebox.song.Song(
         title='song 2',
         album='album 2',
         artist='artist 2',
-        path='path 2',
+        uri='path 2',
     )
     playlist.add_song(song2)
 

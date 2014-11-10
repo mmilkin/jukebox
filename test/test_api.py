@@ -29,7 +29,7 @@ class TestAllSongs(TestCase):
             title='song 1',
             album='album 1',
             artist='artist 1',
-            path='path 1',
+            uri='path 1',
         )
         request = mock.Mock(name='request')
         storage = jukebox.storage.MemoryStorage()
@@ -59,7 +59,7 @@ class TestAllSongs(TestCase):
                 title='song %s' % i,
                 album='album %s' % i,
                 artist='artist %s' % i,
-                path='path %s' % i,
+                uri='path %s' % i,
             )
             pk = yield storage.add_song(song)
             pks.append(pk)
@@ -102,7 +102,7 @@ def test_get_playlist_queue():
             title='song %s' % i,
             album='album %s' % i,
             artist='artist %s' % i,
-            path='path %s' % i,
+            uri='path %s' % i,
         )
         songs.append(song)
         playlist.add_song(song)
@@ -149,7 +149,7 @@ def test_get_playlist_current():
         title='song 0',
         album='album 0',
         artist='artist 0',
-        path='path 0',
+        uri='path 0',
     )
     songs.append(song)
     playlist.add_song(song)

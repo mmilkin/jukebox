@@ -1,10 +1,10 @@
 class Song(object):
-    def __init__(self, title, album, artist, path):
+    def __init__(self, title, album, artist, uri):
         self.pk = None
         self.title = title
         self.album = album
         self.artist = artist
-        self.path = path
+        self.uri = uri
 
     def __repr__(self):
         return '<Song(pk={}, title={}>'.format(self.pk, self.title)

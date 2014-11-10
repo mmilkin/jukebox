@@ -21,7 +21,7 @@ class IStorage(object):
             title='song 1',
             album='album 1',
             artist='artist 1',
-            path='path 1',
+            uri='path 1',
         )
         pk = yield storage.add_song(song)
         song_back = yield storage.get_song(pk)
@@ -43,7 +43,7 @@ class IStorage(object):
                 title='song %s' % i,
                 album='album %s' % i,
                 artist='artist %s' % i,
-                path='path %s' % i,
+                uri='path %s' % i,
             )
             song.pk = yield storage.add_song(song)
 
@@ -60,7 +60,7 @@ class IStorage(object):
                 title='song %s' % i,
                 album='album %s' % i,
                 artist='artist %s' % i,
-                path='path %s' % i,
+                uri='path %s' % i,
             )
             song.pk = yield storage.add_song(song)
             songs.append(song)
@@ -80,7 +80,7 @@ class IStorage(object):
             title='song 1',
             album='album 1',
             artist='artist 1',
-            path='path 1',
+            uri='path 1',
         )
         pk = yield storage.add_song(song)
         yield storage.del_song(song)
