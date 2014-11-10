@@ -1,6 +1,104 @@
 (function () {
 'use strict';
 
+describe('groupByArtist filter', function () {
+    beforeEach(module('songList'));
+
+    var injected = {};
+    beforeEach(inject(function (groupByArtistFilter) {
+        injected.groupByArtist = groupByArtistFilter;
+    }));
+
+    it('should group by artist', function () {
+        var songs = [
+            {
+                pk: 0,
+                title: 'song 0',
+                album: 'album 0',
+                artist: 'artist 0'
+            },
+            {
+                pk: 1,
+                title: 'song 1',
+                album: 'album 0',
+                artist: 'artist 0'
+            },
+            {
+                pk: 2,
+                title: 'song 2',
+                album: 'album 1',
+                artist: 'artist 1'
+            }
+        ];
+
+        var groupedSongs = injected.groupByArtist(songs);
+
+        expect(groupedSongs['artist 0'][0].pk).toEqual(0);
+        expect(groupedSongs['artist 0'][1].pk).toEqual(1);
+        expect(groupedSongs['artist 1'][0].pk).toEqual(2);
+    });
+});
+
+
+describe('searchSongs', function() {
+    beforeEach(module('songList'));
+
+    var injected = {};
+    beforeEach(inject(function (searchSongsFilter) {
+        injected.searchSongs = searchSongsFilter;
+    }));
+
+    var songs = [
+        {
+            pk: 0,
+            title: 'song 0',
+            album: 'album 0',
+            artist: 'artist 0'
+        },
+        {
+            pk: 1,
+            title: 'song 1',
+            album: 'album 1',
+            artist: 'artist 1'
+        },
+        {
+            pk: 2,
+            title: undefined,
+            album: null,
+            artist: null
+        }
+    ];
+
+    it('should match all with a undefined search', function () {
+        var result = injected.searchSongs(songs, undefined);
+        expect(result[0].pk).toEqual(0);
+        expect(result[1].pk).toEqual(1);
+        expect(result[2].pk).toEqual(2);
+        expect(result.length).toEqual(3);
+    });
+
+    it('should match by title', function () {
+        var result = injected.searchSongs(songs, 'song 0');
+        expect(result[0].pk).toEqual(0);
+        expect(result[1].pk).toEqual(2);
+        expect(result.length).toEqual(2);
+    });
+
+    it('should match by album', function () {
+        var result = injected.searchSongs(songs, 'album 1');
+        expect(result[0].pk).toEqual(1);
+        expect(result[1].pk).toEqual(2);
+        expect(result.length).toEqual(2);
+    });
+
+    it('should match by artist', function () {
+        var result = injected.searchSongs(songs, 'artist 0');
+        expect(result[0].pk).toEqual(0);
+        expect(result[1].pk).toEqual(2);
+        expect(result.length).toEqual(2);
+    });
+});
+
 describe('songList controllers', function () {
     beforeEach(module('songList'));
 
@@ -18,7 +116,7 @@ describe('songList controllers', function () {
             injected.$httpBackend.verifyNoOutstandingRequest();
         });
 
-        it('should create the "music" model from xhr', function() {
+        it('should create the "songs" model from xhr', function () {
             injected.$httpBackend.expectGET('/api/songs').respond(
                 {songs: [
                     {
