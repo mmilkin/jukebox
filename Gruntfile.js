@@ -24,11 +24,11 @@ module.exports = function(grunt) {
         ngtemplates: {
             build: {
                 options: {
-                    base: 'app/partial',
-                    prepend: '/partial/',
+                    prefix: '/',
                     module: 'templates'
                 },
-                src: ['app/partial/*.html'],
+                cwd: 'app',
+                src: ['partial/*.html'],
                 dest: 'build/templates.js'
             },
         },
