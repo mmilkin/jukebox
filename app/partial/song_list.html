@@ -5,7 +5,7 @@
             ng-repeat="(artist, songs) in songs | searchSongs:searchString | groupByArtist"
         >
             <p ng-click="toggleShown()">{{ artist }}</p>
-            <div ui-if="shown">
+            <div ng-if="shown">
                 <ul ng-repeat="song in songs"
                 >
                     <li><a href="" ng-click="play(song.pk)">+</a> {{ song.album }} - {{ song.title }}</li>

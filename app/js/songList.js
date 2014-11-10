@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var module = angular.module('songList', ['ng', 'ui.if']);
+    var module = angular.module('songList', ['ng']);
 
     module.filter('groupByArtist', function() {
         return function(songs) {
