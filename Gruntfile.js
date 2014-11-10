@@ -79,7 +79,7 @@ module.exports = function(grunt) {
         watch: {
             templates: {
                 files: 'app/partial/*.html',
-                tasks: ['ngtemplates', 'concat', 'copy:js']
+                tasks: ['ngtemplates', 'concat', 'ngmin', 'copy:js']
             },
             scripts: {
                 files: [].concat(jsFiles, testFiles),
