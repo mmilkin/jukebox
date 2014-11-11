@@ -64,6 +64,7 @@ class GSTEncoder(object):
 
         lame = gst.element_factory_make('lamemp3enc', 'lame')
         lame.set_property('quality', 1)
+
         sink = gst.element_factory_make('appsink', 'appsink')
         sink.set_property('emit-signals', True)
         sink.connect('new-buffer', self.data_ready)
@@ -72,6 +73,7 @@ class GSTEncoder(object):
         gst.element_link_many(audioconvert, lame, sink)
 
         self.encoder.set_state(gst.STATE_PAUSED)
+
         bus = self.encoder.get_bus()
         bus.add_signal_watch()
         bus.connect('message', self.on_message)

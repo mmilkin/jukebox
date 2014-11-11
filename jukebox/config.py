@@ -27,12 +27,14 @@ def make_root_resource():
     config = yaml.load(open('jukebox.yaml', 'r'))
 
     storage = config['storage']
-    scanner = config.get('scanner')
+
+    scanners = config['scanners']
     playlist = config['playlist']
     encoder = config['encoder']
 
-    if scanner:
+    for scanner in scanners:
         reactor.callInThread(scanner.scan)
+
     ISearchableStorage(storage).init()  # Defered lost in space
 
     api_server = API(storage, playlist)
