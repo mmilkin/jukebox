@@ -6,11 +6,16 @@ storage: &storage
     !!python/object/apply:jukebox.storage.MemoryStorage
     args:
 
-scanner:
+scanners:
     !!python/object/apply:jukebox.scanner.DirScanner
     args:
         - *storage
         - '/home/armooo/Music/'
+    !!python/object/apply:jukebox.scanner.GoogleMusicScanner
+    args:
+        - *storage
+        - 'username/email'
+        - 'password'
 
 encoder: !!python/name:jukebox.encoders.GSTEncoder
 

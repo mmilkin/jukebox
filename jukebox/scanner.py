@@ -2,6 +2,8 @@ import os
 import zope.interface
 import mutagen
 
+from gmusicapi import Mobileclient, Webclient
+
 import jukebox.song
 
 
@@ -21,6 +23,23 @@ class IScanner(zope.interface.Interface):
         """
         Stops the async watcher
         """
+
+
+class GoogleMusicScanner(object):
+    zope.interface.implements(IScanner)
+
+    def __init__(self, storage, email, password):
+        self.storage = storage
+        self.email = email
+        self.password = password
+
+    def scan(self):
+        wclient = Webclient()
+        wclient.login(self.email, self.password)
+        mobile_client = Mobileclient()
+        mobile_client.login(self.email, self.password)
+        for song in mobile_client.get_all_songs():
+            self.storage.add_song(jukebox.song.GoogleSong(song, wclient))
 
 
 class DirScanner(object):

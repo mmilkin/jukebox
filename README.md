@@ -26,7 +26,9 @@ The user name and password must be valid google music accounts
 
 Example
 ------
-storage = GooglePlayStorage('username', 'password')
+storage = GoogleMusicScanner('username', 'password')
+If you have two factor auth this password needs to be added as an application password
+The password needs to be added to your google account
 
 Both py.test and grunt will stay running and retun the tests when the files
 change. Grunt will also redeploy the JS  and CSS.

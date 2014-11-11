@@ -34,6 +34,7 @@ class CopyEncoder(object):
         self.song = song
         self.data_callback = data_callback
         self.done_callback = done_callback
+        import ipdb; ipdb.set_trace()
         self.file = urllib2.urlopen(self.song.uri)
 
         self.lc = LoopingCall(self.process_file)
@@ -58,6 +59,7 @@ class GSTEncoder(object):
         import pygst
         pygst.require('0.10')
         import gst
+
         self.song = song
         self.data_callback = data_callback
         self.done_callback = done_callback
@@ -72,6 +74,7 @@ class GSTEncoder(object):
 
         lame = gst.element_factory_make('lamemp3enc', 'lame')
         lame.set_property('quality', 1)
+
         sink = gst.element_factory_make('appsink', 'appsink')
         sink.set_property('emit-signals', True)
         sink.set_property('blocksize', 1024 * 32)
@@ -81,6 +84,7 @@ class GSTEncoder(object):
         gst.element_link_many(audioconvert, lame, sink)
 
         self.encoder.set_state(gst.STATE_PAUSED)
+
         bus = self.encoder.get_bus()
         bus.add_signal_watch()
         bus.connect('message', self.on_message)

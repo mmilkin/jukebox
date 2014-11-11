@@ -10,11 +10,11 @@ def make_root_resource():
 
 
     storage = config['storage']
-    scanner = config['scanner']
+    scanners = config['scanners']
     playlist = config['playlist']
     encoder = config['encoder']
-
-    reactor.callInThread(scanner.scan)
+    for scanner in scanners:
+        reactor.callInThread(scanner.scan)
     api_server = API(storage, playlist)
     source = Source(playlist, encoder)
     httpd = HTTPd(api_server.app.resource(), Stream(source))
