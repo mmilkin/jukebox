@@ -58,6 +58,7 @@ class GSTEncoder(object):
         decodebin = gst.element_factory_make('uridecodebin', 'uridecodebin')
         uri = yield self.song.get_uri()
         decodebin.set_property('uri', uri)
+
         decodebin.connect('pad-added', self.on_new_pad)
 
         audioconvert = gst.element_factory_make('audioconvert', 'audioconvert')

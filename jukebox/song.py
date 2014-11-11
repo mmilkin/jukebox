@@ -1,5 +1,5 @@
-from twisted.internet import defer
-import urllib
+from twisted.internet import defer, threads
+from twisted.internet.defer import inlineCallbacks, returnValue
 
 
 class Song(object):
@@ -30,7 +30,6 @@ class GoogleSong(Song):
         self.artist = google_song['artist']
         self.pk = self.id = google_song['id']
 
-    @property
     def uri(self):
         urls = self.web_api.get_stream_urls(self.id)
         # Normal tracks return a single url, All Access tracks return multiple urls,
@@ -38,6 +37,11 @@ class GoogleSong(Song):
         if len(urls) == 1:
             return urls[0]
         raise Exception(u'Bad Url')
+
+    @inlineCallbacks
+    def get_song_uri(self):
+        url = yield threads.deferToThread(self.uri)
+        returnValue(url)
 
 
 class Playlist(object):
