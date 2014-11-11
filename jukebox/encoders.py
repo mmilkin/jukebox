@@ -34,7 +34,6 @@ class CopyEncoder(object):
         self.song = song
         self.data_callback = data_callback
         self.done_callback = done_callback
-        import ipdb; ipdb.set_trace()
         self.file = urllib2.urlopen(self.song.uri)
 
         self.lc = LoopingCall(self.process_file)
@@ -56,18 +55,21 @@ class GSTEncoder(object):
     zope.interface.classProvides(IEncoder)
 
     def __init__(self, song, data_callback, done_callback):
-        import pygst
-        pygst.require('0.10')
-        import gst
-
         self.song = song
         self.data_callback = data_callback
         self.done_callback = done_callback
+        self.url_callback = self.song.get_song_uri()
+        self.url_callback.addCallback(self.encode_callback)
 
+    def encode_callback(self, url):
+        import pygst
+        pygst.require('0.10')
+        import gst
         self.encoder = gst.Pipeline('encoder')
 
         decodebin = gst.element_factory_make('uridecodebin', 'uridecodebin')
-        decodebin.set_property('uri', self.song.uri)
+
+        decodebin.set_property('uri', url)
         decodebin.connect('pad-added', self.on_new_pad)
 
         audioconvert = gst.element_factory_make('audioconvert', 'audioconvert')

@@ -1,3 +1,7 @@
+from twisted.internet import threads
+from twisted.internet.defer import Deferred, inlineCallbacks, returnValue
+
+
 class Song(object):
     def __init__(self, title, album, artist, uri):
         self.pk = None
@@ -9,6 +13,12 @@ class Song(object):
     def __repr__(self):
         return '<Song(pk={}, title={}>'.format(self.pk, self.title)
 
+    @inlineCallbacks
+    def get_song_uri(self):
+        d = Deferred()
+        d.callback(self.uri)
+        uriYield = yield d
+        returnValue(uriYield)
 
 class GoogleSong(Song):
     def __init__(self, google_song, web_api):
@@ -19,7 +29,6 @@ class GoogleSong(Song):
         self.artist = google_song['artist']
         self.pk = self.id = google_song['id']
 
-    @property
     def uri(self):
         urls = self.web_api.get_stream_urls(self.id)
         # Normal tracks return a single url, All Access tracks return multiple urls,
@@ -27,6 +36,11 @@ class GoogleSong(Song):
         if len(urls) == 1:
             return urls[0]
         raise Exception(u'Bad Url')
+
+    @inlineCallbacks
+    def get_song_uri(self):
+        url = yield threads.deferToThread(self.uri)
+        returnValue(url)
 
 
 class Playlist(object):
