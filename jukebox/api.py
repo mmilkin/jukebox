@@ -1,6 +1,8 @@
 import json
 
 from klein import Klein
+from jukebox.scanner import GoogleMusicScanner
+from twisted.internet import threads
 import twisted.internet.defer as defer
 
 import jukebox.storage
@@ -69,3 +71,13 @@ class API(object):
 
         self.playlist.add_listener(l)
         return d
+
+    @app.route('/google-account', methods=['POST'])
+    @defer.inlineCallbacks
+    def add_google_scanner(self, request):
+        import ipdb; ipdb.set_trace()
+        data = json.loads(request.content.getvalue())
+        scanner = GoogleMusicScanner(self.storage, data['user'], data['password'])
+        yield threads.deferToThread(scanner.scan)
+        defer.returnValue('')
+

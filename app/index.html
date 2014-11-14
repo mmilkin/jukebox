@@ -2,6 +2,7 @@
 <head>
     <title>JukeBox</title>
     <link rel="stylesheet" href="/style.css" type="test/css"/>
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body ng-app="jukebox">
 
@@ -10,7 +11,7 @@
          src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"
          alt="Fork me on GitHub">
 </a>
-
+<div ng-include="'/partial/add_play_account.html'"></div>
 <div ng-include="'/partial/playlist.html'"></div>
 <div ng-include="'/partial/song_list.html'"></div>
 

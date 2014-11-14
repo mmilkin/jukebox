@@ -1,0 +1,22 @@
+<div class="add-account">
+    Add Google Music Account.
+    <form ng-submit="submit()" ng-controller="addAccountCtl">
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text"
+                   name="username"
+                   class="form-control"
+                   ng-model="username">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password"
+                   name="password"
+                   class="form-control"
+                   ng-model="password">
+        </div>
+
+        <button class="btn btn-primary">Submit</button>
+    </form>
+</div>

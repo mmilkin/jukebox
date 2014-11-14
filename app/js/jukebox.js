@@ -7,7 +7,8 @@
         'playlist',
         'songList',
         'tickle',
-        'templates'
+        'templates',
+        'accounts'
     ]);
 
     module.run(function(tickleService) {
