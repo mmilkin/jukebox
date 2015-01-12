@@ -3,9 +3,26 @@
 
     var module = angular.module('songList', ['ng']);
 
-    module.filter('groupByArtist', function() {
+    module.filter('groupByArtist', function($timeout, $rootScope) {
+        var cache = {};
+
+        var getKey = function(args) {
+            return angular.toJson(args);
+        };
+
         return function(songs) {
-            return _.groupBy(songs, 'artist');
+            var key = getKey(songs);
+            if (cache[key]) {
+                return cache[key];
+            }
+            var grouped = _.groupBy(songs, 'artist');
+            cache[key] = grouped;
+            $timeout(function() {
+                if (!$rootScope.$$phase) {
+                    delete cache[key];
+                }
+            }, 0, false);
+            return grouped;
         };
     });
 
