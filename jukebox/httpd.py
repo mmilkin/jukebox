@@ -1,3 +1,5 @@
+import os.path
+
 from twisted.web.static import File
 from twisted.web.resource import Resource
 from twisted.web.server import NOT_DONE_YET
@@ -79,4 +81,4 @@ class HTTPd(object):
 
     @app.route('/', branch=True)
     def index(self, request):
-        return File('./static')
+        return File(os.path.join(os.path.dirname(__file__), 'static'))

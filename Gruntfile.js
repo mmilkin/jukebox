@@ -46,16 +46,16 @@ module.exports = function(grunt) {
         },
         copy: {
             html: {
-                files: [ { expand: true, cwd:'app/', src: ['*.html'], dest: 'static/' } ]
+                files: [ { expand: true, cwd:'app/', src: ['*.html'], dest: 'jukebox/static/' } ]
             },
             js: {
-                files: [ { expand: true, cwd:'build/', src: ['app.js'], dest: 'static/' } ]
+                files: [ { expand: true, cwd:'build/', src: ['app.js'], dest: 'jukebox/static/' } ]
             }
         },
         uglify: {
             js: {
                 src: 'build/app.js',
-                dest: 'static/app.js'
+                dest: 'jukebox/static/app.js'
             }
         },
         less: {
@@ -64,7 +64,7 @@ module.exports = function(grunt) {
                     dumpLineNumbers: 'all'
                 },
                 files: {
-                    'static/style.css': 'app/style.less'
+                    'jukebox/static/style.css': 'app/style.less'
                 }
             },
             production: {
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
                     yuicompress: true
                 },
                 files: {
-                    'static/style.css': 'app/style.less'
+                    'jukebox/static/style.css': 'app/style.less'
                 }
             }
         },
