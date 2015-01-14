@@ -26,11 +26,12 @@
         };
     });
 
-    module.filter('searchSongs', function() {
+    module.filter('filterSongs', function() {
         return function(songs, query) {
             if (angular.isUndefined(query)) {
                 return songs;
             }
+            query = query.toLowerCase();
 
             function matchField(field, song) {
                 if (!song[field]) {
@@ -52,11 +53,23 @@
     });
 
     module.controller('songListCtl', function($scope, $http) {
-        var songs = [];
-
         $http.get('/api/songs').then(function (result) {
             $scope.songs = result.data.songs;
         });
+
+        $scope.$watch('searchString', _.debounce(function(searchString) {
+            $scope.songs = _.where($scope.songs, {fromSearch: undefined});
+            if (!searchString) {
+                return;
+            }
+            $http.get('/api/songs/search', {
+                params: {q: searchString}
+            }).then(function(result) {
+                var songs = result.data.songs;
+                _.each(songs, function(song) {song.fromSearch = true;});
+                $scope.songs = _.union($scope.songs, songs);
+            });
+        }, 200));
 
         $scope.play = function (pk) {
             $http.post('/api/playlist/add', {pk: pk});

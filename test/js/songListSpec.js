@@ -40,12 +40,12 @@ describe('groupByArtist filter', function () {
 });
 
 
-describe('searchSongs', function() {
+describe('filterSongs', function() {
     beforeEach(module('songList'));
 
     var injected = {};
-    beforeEach(inject(function (searchSongsFilter) {
-        injected.searchSongs = searchSongsFilter;
+    beforeEach(inject(function (filterSongsFilter) {
+        injected.filterSongs = filterSongsFilter;
     }));
 
     var songs = [
@@ -70,7 +70,7 @@ describe('searchSongs', function() {
     ];
 
     it('should match all with a undefined search', function () {
-        var result = injected.searchSongs(songs, undefined);
+        var result = injected.filterSongs(songs, undefined);
         expect(result[0].pk).toEqual(0);
         expect(result[1].pk).toEqual(1);
         expect(result[2].pk).toEqual(2);
@@ -78,21 +78,21 @@ describe('searchSongs', function() {
     });
 
     it('should match by title', function () {
-        var result = injected.searchSongs(songs, 'song 0');
+        var result = injected.filterSongs(songs, 'song 0');
         expect(result[0].pk).toEqual(0);
         expect(result[1].pk).toEqual(2);
         expect(result.length).toEqual(2);
     });
 
     it('should match by album', function () {
-        var result = injected.searchSongs(songs, 'album 1');
+        var result = injected.filterSongs(songs, 'album 1');
         expect(result[0].pk).toEqual(1);
         expect(result[1].pk).toEqual(2);
         expect(result.length).toEqual(2);
     });
 
     it('should match by artist', function () {
-        var result = injected.searchSongs(songs, 'artist 0');
+        var result = injected.filterSongs(songs, 'artist 0');
         expect(result[0].pk).toEqual(0);
         expect(result[1].pk).toEqual(2);
         expect(result.length).toEqual(2);
