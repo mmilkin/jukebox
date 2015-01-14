@@ -1,9 +1,18 @@
+import base64
+import hashlib
+import hmac
 import itertools
+import json
+import time
+import urllib
 
-import zope.interface
+from twisted.web.client import Agent, HTTPConnectionPool, readBody, IBodyProducer, BrowserLikeRedirectAgent
+from twisted.web.http_headers import Headers
 import twisted.internet.defer as defer
+import zope.interface
 
 from jukebox.interfaces import IStorage, ISearchableStorage
+import jukebox.song
 
 
 class NoOpStorageAdaptor(object):
@@ -83,3 +92,210 @@ class MemoryStorage(object):
             return d
         d.callback(None)
         return d
+
+
+class StringProducer(object):
+    zope.interface.implements(IBodyProducer)
+
+    def __init__(self, body):
+        self.body = body
+        self.length = len(body)
+
+    def startProducing(self, consumer):
+        consumer.write(self.body)
+        return defer.succeed(None)
+
+    def pauseProducing(self):
+        pass
+
+    def stopProducing(self):
+        pass
+
+
+class GoogleMusicAllAccessStorage(object):
+    zope.interface.implements(ISearchableStorage)
+
+    def __init__(self, reactor, username, password, device_id):
+        self.username = username
+        self.password = password
+        self.device_id = str(int(device_id, 16))
+        pool = HTTPConnectionPool(reactor)
+        pool.maxPersistentPerHost = 8
+        self.agent = Agent(reactor, pool=pool)
+        self.redirect_agent = BrowserLikeRedirectAgent(self.agent)
+        self.auth = None
+
+    @defer.inlineCallbacks
+    def init(self):
+        data = {
+            'accountType': 'HOSTED_OR_GOOGLE',
+            'Email': self.username,
+            'Passwd': self.password,
+            'service': 'sj',
+            'source': 'jukebox-0.1',
+        }
+        responce = yield self.agent.request(
+            'POST',
+            'https://www.google.com/accounts/ClientLogin',
+            Headers({
+                'Content-Type': ['application/x-www-form-urlencoded; charset=UTF-8'],
+            }),
+            StringProducer(urllib.urlencode(data)),
+        )
+        body = yield readBody(responce)
+        if responce.code != 200:
+            raise Exception('Login failed {}: {}'.format(responce.code, body))
+        for line in body.split('\n'):
+            key, value = line.split('=')
+            if key == 'Auth':
+                self.auth = value
+                break
+        else:
+            raise Exception('Auth not found')
+
+    def authed_get(self, url, args, agent=None, headers=None):
+        if not agent:
+            agent = self.redirect_agent
+        url = url + '?' + urllib.urlencode(args)
+
+        full_headers = Headers({
+            'Content-Type': ['application/json'],
+            'Authorization': ['GoogleLogin auth={}'.format(self.auth)],
+        })
+        if headers:
+            for k, v in headers.items():
+                full_headers.addRawHeader(k, v)
+
+        return agent.request(
+            'GET',
+            url,
+            headers=full_headers,
+        )
+
+    @defer.inlineCallbacks
+    def _get_songs_for_artist_id(self, artist_id):
+        responce = yield self.authed_get(
+            'https://mclients.googleapis.com/sj/v1.10/fetchartist',
+            {
+                'alt': 'json',
+                'nid': artist_id,
+                'include-albums': False,
+                'num-top-tracks': 50,
+                'num-related-artists': 0,
+            }
+        )
+        body = yield readBody(responce)
+        body = json.loads(body)
+        try:
+            songs = body['topTracks']
+        except KeyError:
+            songs = []
+        defer.returnValue(songs)
+
+    @defer.inlineCallbacks
+    def _get_songs_for_album_id(self, album_id):
+        responce = yield self.authed_get(
+            'https://mclients.googleapis.com/sj/v1.10/fetchalbum',
+            {
+                'alt': 'json',
+                'nid': album_id,
+                'include-tracks': True,
+            }
+        )
+        body = yield readBody(responce)
+        body = json.loads(body)
+        try:
+            songs = body['tracks']
+        except KeyError:
+            songs = []
+        defer.returnValue(songs)
+
+    def make_song(self, song_data):
+        song_id = song_data['storeId']
+        song = jukebox.song.Song(
+            title=song_data['title'],
+            album=song_data['album'],
+            artist=song_data['artist'],
+            uri=lambda: self.get_song_url(song_id),
+        )
+        song.pk = 'gmaa:' + song_id
+        return song
+
+    @defer.inlineCallbacks
+    def search(self, query):
+        responce = yield self.authed_get(
+            'https://mclients.googleapis.com/sj/v1.10/query',
+            {'q': query, 'max-results': 50, }
+        )
+        body = yield readBody(responce)
+        if responce.code != 200:
+            raise Exception('Search failed {}: {}'.format(responce.code, body))
+        result = json.loads(body)
+        songs = []
+        defereds = []
+
+        for entry in result.get('entries', []):
+            if entry['type'] == '1':
+                songs.append(entry['track'])
+            if entry['type'] == '2':
+                d = self._get_songs_for_artist_id(entry['artist']['artistId'])
+                defereds.append(d)
+            if entry['type'] == '3':
+                d = self._get_songs_for_album_id(entry['album']['albumId'])
+                defereds.append(d)
+
+        results = yield defer.DeferredList(defereds)
+
+        for success, result in results:
+            if success:
+                songs.extend(result)
+            else:
+                print result
+
+        defer.returnValue([self.make_song(song) for song in songs])
+
+    @defer.inlineCallbacks
+    def get_song_url(self, song_id):
+        s1 = base64.b64decode('VzeC4H4h+T2f0VI180nVX8x+Mb5HiTtGnKgH52Otj8ZCGDz9jRW'
+                              'yHb6QXK0JskSiOgzQfwTY5xgLLSdUSreaLVMsVVWfxfa8Rw==')
+        s2 = base64.b64decode('ZAPnhUkYwQ6y5DdQxWThbvhJHN8msQ1rqJw0ggKdufQjelrKuiG'
+                              'GJI30aswkgCWTDyHkTGK9ynlqTkJ5L4CiGGUabGeo8M6JTQ==')
+        key = ''.join([chr(ord(c1) ^ ord(c2)) for (c1, c2) in zip(s1, s2)])
+        salt = str(int(time.time() * 1000))
+        m = hmac.new(key, song_id, hashlib.sha1)
+        m.update(salt)
+        sig = base64.urlsafe_b64encode(m.digest())[:-1]
+
+        responce = yield self.authed_get(
+            'https://android.clients.google.com/music/mplay',
+            {
+                'opt': 'hi',
+                'net': 'wifi',
+                'pt': 'e',
+                'slt': salt,
+                'sig': sig,
+                'mjck': song_id,
+            },
+            agent=self.agent,
+            headers={'X-Device-ID': self.device_id}
+        )
+        print responce.headers
+        url = responce.headers.getRawHeaders('location')[0]
+        print url
+        defer.returnValue(url)
+
+    @defer.inlineCallbacks
+    def get_song(self, pk):
+        if not pk.startswith('gmaa:'):
+            raise Exception('Bad PK {}'.format(pk))
+
+        song_id = pk.split(':', 1)[1]
+        responce = yield self.authed_get(
+            'https://mclients.googleapis.com/sj/v1.10/fetchtrack',
+            {'alt': 'json', 'nid': song_id}
+        )
+        body = yield readBody(responce)
+        if responce.code != 200:
+            raise Exception('Search failed {}: {}'.format(responce.code, body))
+        song = self.make_song(json.loads(body))
+        defer.returnValue(song)
