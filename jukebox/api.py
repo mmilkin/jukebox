@@ -37,6 +37,18 @@ class API(object):
         data = {'songs': [self.format_song(s) for s in songs]}
         defer.returnValue(json.dumps(data))
 
+    @app.route('/songs/search', methods=['GET'])
+    @defer.inlineCallbacks
+    def search_songs(self, request):
+        request.setHeader('Content-Type', 'application/json')
+        try:
+            query = request.args.get('q')[0]
+        except KeyError:
+            raise Exception('q is required')
+        songs = yield self.searchable_storage.search(query)
+        data = {'songs': [self.format_song(s) for s in songs]}
+        defer.returnValue(json.dumps(data))
+
     @app.route('/playlist', methods=['GET'])
     def get_playlist(self, request):
         request.setHeader('Content-Type', 'application/json')

@@ -22,6 +22,7 @@ def make_root_resource():
     from twisted.internet import reactor
     from jukebox.api import API
     from jukebox.httpd import HTTPd, Stream, Source
+    from jukebox.interfaces import ISearchableStorage
 
     config = yaml.load(open('jukebox.yaml', 'r'))
 
@@ -32,6 +33,7 @@ def make_root_resource():
 
     if scanner:
         reactor.callInThread(scanner.scan)
+    ISearchableStorage(storage).init()  # Defered lost in space
 
     api_server = API(storage, playlist)
     source = Source(playlist, encoder)

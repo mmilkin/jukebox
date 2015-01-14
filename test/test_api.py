@@ -95,6 +95,55 @@ class TestAllSongs(TestCase):
         ]})
 
 
+class TestSearchSongs(TestCase):
+    @defer.inlineCallbacks
+    def test_search_songs(self):
+        request = mock.Mock(name='request')
+        request.args = {'q': ['foo']}
+        storage = mock.Mock(name='storage')
+        directlyProvides(storage, jukebox.interfaces.ISearchableStorage)
+        songs = []
+        for i in range(3):
+            song = jukebox.song.Song(
+                title='song %s' % i,
+                album='album %s' % i,
+                artist='artist %s' % i,
+                uri='path %s' % i,
+            )
+            song.pk = i
+            songs.append(song)
+        storage.search.return_value = defer.succeed(songs)
+
+        api = jukebox.api.API(storage=storage)
+
+        result = yield api.search_songs(request)
+
+        request.setHeader.assert_called_with(
+            'Content-Type', 'application/json'
+        )
+
+        assert result == json.dumps({'songs': [
+            {
+                'pk': 0,
+                'title': 'song 0',
+                'album': 'album 0',
+                'artist': 'artist 0',
+            },
+            {
+                'pk': 1,
+                'title': 'song 1',
+                'album': 'album 1',
+                'artist': 'artist 1',
+            },
+            {
+                'pk': 2,
+                'title': 'song 2',
+                'album': 'album 2',
+                'artist': 'artist 2',
+            },
+        ]})
+
+
 def test_get_playlist_queue():
     request = mock.Mock(name='request')
     playlist = jukebox.song.Playlist()
