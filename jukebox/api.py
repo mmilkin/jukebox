@@ -49,7 +49,7 @@ class API(object):
     @app.route('/playlist/add', methods=['POST'])
     @defer.inlineCallbacks
     def add_to_playlist(self, request):
-        pk = int(json.loads(request.content.getvalue())['pk'])
+        pk = json.loads(request.content.getvalue())['pk']
         song = yield self.storage.get_song(pk)
         self.playlist.add_song(song)
         defer.returnValue('')

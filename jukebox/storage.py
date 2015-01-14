@@ -56,6 +56,7 @@ class MemoryStorage(object):
         return d
 
     def get_song(self, pk):
+        pk = int(pk)
         d = defer.Deferred()
         try:
             song = self._store[pk]
