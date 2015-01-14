@@ -1,10 +1,20 @@
+from twisted.internet import defer
+
+
 class Song(object):
     def __init__(self, title, album, artist, uri):
         self.pk = None
         self.title = title
         self.album = album
         self.artist = artist
-        self.uri = uri
+        self._uri = uri
+
+    def get_uri(self):
+        if not callable(self._uri):
+            uri = lambda: self._uri
+        else:
+            uri = self._uri
+        return defer.maybeDeferred(uri)
 
     def __repr__(self):
         return '<Song(pk={}, title={}>'.format(self.pk, self.title)

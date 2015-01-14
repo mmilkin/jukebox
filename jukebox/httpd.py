@@ -7,22 +7,24 @@ from klein import Klein
 
 
 class Source(object):
-    def __init__(self, playlist, encoder):
+    def __init__(self, playlist, encoder_cls):
         self.playlist = playlist
-        self.encoder = encoder
+        self.encoder_cls = encoder_cls
         self.clients = []
         self.playlist.add_listener(self.start_new_song)
+        self.encoder = None
 
     def start_new_song(self, event):
         if event != 'NEW_CUR':
             return
         if not self.playlist.cur:
             return
-        self.encoder(
+        # Keep the encoder around so it will not be GCed
+        self.encoder = self.encoder_cls(
             song=self.playlist.cur,
-            data_callback=self.send,
-            done_callback=self.playlist.advance,
+            data_callback=self.send
         )
+        self.encoder.encode().addCallback(lambda r: self.playlist.advance())
 
     def add_client(self, client):
         self.clients.append(client)

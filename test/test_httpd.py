@@ -64,8 +64,8 @@ def test_source_new_song():
     encoder.assert_called_with(
         song=playlist.cur,
         data_callback=source.send,
-        done_callback=playlist.advance
     )
+    encoder.return_value.encode.assert_called()
 
 
 def test_source_not_new_song():
