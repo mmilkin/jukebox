@@ -2,18 +2,14 @@ import random
 import zope.interface
 
 
-class IDJ(zope.interface.Interface):
-    def __call__(storage, playlist):
-        """
-        Picks songs from the storage to add to the playlist.
-        """
+from jukebox.interfaces import IDJ, IStorage
 
 
 class RandomDJ(object):
     zope.interface.classProvides(IDJ)
 
     def __init__(self, storage, playlist):
-        self.storage = storage
+        self.storage = IStorage(storage)
         self.playlist = playlist
         self.playlist.add_listener(self.playlist_changed)
         self.playlist_changed(None)

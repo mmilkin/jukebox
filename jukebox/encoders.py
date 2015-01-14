@@ -3,22 +3,7 @@ import urllib2
 import zope.interface
 from twisted.internet.task import LoopingCall
 
-
-class IEncoder(zope.interface.Interface):
-    """
-    An IEncoder takes raw song data and transforms it in to an audio stream. It
-    is also responsible for limiting the playback speed.
-    """
-    def __call__(song, data_callback, done_callback):
-        """
-        song: A instance of song object
-
-        data_callback: a callable which will be called with each fragment of
-            encoded data
-
-        done_callback: a zero argument callable which is called when the song
-            is over
-        """
+from jukebox.interfaces import IEncoder
 
 
 class CopyEncoder(object):

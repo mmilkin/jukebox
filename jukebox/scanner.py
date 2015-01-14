@@ -3,24 +3,7 @@ import zope.interface
 import mutagen
 
 import jukebox.song
-
-
-class IScanner(zope.interface.Interface):
-    def scan():
-        """
-        Start the scanning process. It is expected to be called at startup and
-        can block.
-        """
-
-    def watch():
-        """
-        Starts an async watcher that can add files to the IStorage
-        """
-
-    def stop():
-        """
-        Stops the async watcher
-        """
+from jukebox.interfaces import IScanner
 
 
 class DirScanner(object):

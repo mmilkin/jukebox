@@ -1,12 +1,14 @@
 import json
 
-import mock
 from twisted.trial.unittest import TestCase
+from zope.interface import directlyProvides
+import mock
 import twisted.internet.defer as defer
 
 import jukebox.api
-import jukebox.storage
+import jukebox.interfaces
 import jukebox.song
+import jukebox.storage
 
 
 class TestAllSongs(TestCase):
@@ -185,6 +187,7 @@ def test_add_to_play_list():
     request.content.getvalue.return_value = '{"pk": 1}'
     playlist = mock.Mock(name='playlist')
     storage = mock.Mock(name='storage')
+    directlyProvides(storage, jukebox.interfaces.IStorage)
     song = storage.get_song.return_value
 
     api = jukebox.api.API(playlist=playlist, storage=storage)

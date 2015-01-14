@@ -15,7 +15,8 @@ class API(object):
             storage = jukebox.storage.MemoryStorage()
         if playlist is None:
             playlist = jukebox.song.Playlist()
-        self.storage = storage
+        self.storage = jukebox.storage.IStorage(storage)
+        self.searchable_storage = jukebox.storage.ISearchableStorage(storage)
         self.playlist = playlist
 
     def format_song(self, song):
