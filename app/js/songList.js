@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var module = angular.module('songList', ['ng']);
+    var module = angular.module('songList', ['ng', 'angularSpinner']);
 
     module.filter('groupByArtist', function($timeout, $rootScope) {
         var cache = {};
@@ -52,7 +52,7 @@
         };
     });
 
-    module.controller('songListCtl', function($scope, $http, $q) {
+    module.controller('songListCtl', function($scope, $http, $q, usSpinnerService) {
         var allSongs = [];
         var searchCanceller;
 
@@ -74,6 +74,7 @@
             }
 
             searchCanceller = $q.defer();
+            usSpinnerService.spin('search');
             $http.get('/api/songs/search', {
                 params: {q: searchString},
                 timeout: searchCanceller.promise
@@ -81,7 +82,10 @@
                 var songs = result.data.songs;
                 _.each(songs, function(song) {song.fromSearch = true;});
                 $scope.songs = songs;
-            });
+            }).finally(function() {
+                usSpinnerService.stop('search');
+            }
+            );
         });
 
         $scope.play = function (pk) {

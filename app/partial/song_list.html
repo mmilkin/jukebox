@@ -1,7 +1,10 @@
 <div class="songlist" ng-controller="songListCtl">
     <ul class="controls">
         <li>Search: <input ng-model="searchString" ng-model-options="{debounce: {'default': 500, 'blur': 0}}" type="text"/></li>
-        <li>Filter <input ng-model="filterString" type="text"/></li>
+        <li>Filter: <input ng-model="filterString" type="text"/></li>
+    <ul>
+    <span us-spinner spinner-key="search"></span>
+
     <ul>
         <li ng-controller="artistCtl"
             ng-repeat="(artist, songs) in songs | filterSongs:filterString | groupByArtist"

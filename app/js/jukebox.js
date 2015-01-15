@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    angular.module('templates', []);
+    angular.module('templates', ['angularSpinner']);
 
     var module = angular.module('jukebox', [
         'playlist',
