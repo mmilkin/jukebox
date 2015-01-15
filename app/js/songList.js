@@ -52,24 +52,37 @@
         };
     });
 
-    module.controller('songListCtl', function($scope, $http) {
+    module.controller('songListCtl', function($scope, $http, $q) {
+        var allSongs = [];
+        var searchCanceller;
+
         $http.get('/api/songs').then(function (result) {
-            $scope.songs = result.data.songs;
+            allSongs = result.data.songs;
+            $scope.songs = allSongs;
         });
 
-        $scope.$watch('searchString', _.debounce(function(searchString) {
+        $scope.$watch('searchString', function(searchString) {
             $scope.songs = _.where($scope.songs, {fromSearch: undefined});
+            if (searchCanceller) {
+                searchCanceller.resolve(true);
+                searchCanceller = undefined;
+            }
+
             if (!searchString) {
+                $scope.songs = allSongs;
                 return;
             }
+
+            searchCanceller = $q.defer();
             $http.get('/api/songs/search', {
-                params: {q: searchString}
+                params: {q: searchString},
+                timeout: searchCanceller.promise
             }).then(function(result) {
                 var songs = result.data.songs;
                 _.each(songs, function(song) {song.fromSearch = true;});
-                $scope.songs = _.union($scope.songs, songs);
+                $scope.songs = songs;
             });
-        }, 200));
+        });
 
         $scope.play = function (pk) {
             $http.post('/api/playlist/add', {pk: pk});

@@ -1,6 +1,6 @@
 <div class="songlist" ng-controller="songListCtl">
     <ul class="controls">
-        <li>Search: <input ng-model="searchString" type="text"/></li>
+        <li>Search: <input ng-model="searchString" ng-model-options="{debounce: {'default': 500, 'blur': 0}}" type="text"/></li>
         <li>Filter <input ng-model="filterString" type="text"/></li>
     <ul>
         <li ng-controller="artistCtl"
