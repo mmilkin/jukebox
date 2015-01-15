@@ -1,4 +1,5 @@
 import base64
+import copy
 import hashlib
 import hmac
 import itertools
@@ -83,15 +84,106 @@ class MemoryStorage(object):
         d.callback(song.pk)
         return d
 
-    def del_song(self, song):
+    def remove_song(self, song):
         d = defer.Deferred()
         try:
-            del self._store[song.pk]
+            del self._store[int(song.pk)]
         except KeyError as e:
             d.errback(e)
             return d
         d.callback(None)
         return d
+
+
+class MultiStorage(object):
+    zope.interface.implements(IStorage, ISearchableStorage)
+
+    def __init__(self, primary_storage, *extra_storages):
+        self.primary_storage = IStorage(primary_storage)
+        self.extra_storages = {
+            str(i): IStorage(extra_storage)
+            for i, extra_storage in enumerate(extra_storages)
+        }
+        self.extra_storages['-1'] = self.primary_storage
+        self.extra_searchable_storages = {
+            str(i): ISearchableStorage(extra_storage)
+            for i, extra_storage in enumerate(extra_storages)
+        }
+        self.extra_searchable_storages['-1'] = ISearchableStorage(primary_storage)
+
+    def patch_song(self, storage_id):
+        def func(song):
+            song = copy.copy(song)
+            song.pk = '{}:{}'.format(storage_id, song.pk)
+            return song
+        return func
+
+    def patch_songs(self, storage_id):
+        patcher = self.patch_song(storage_id)
+
+        def func(songs):
+            return [patcher(song) for song in songs]
+        return func
+
+    @defer.inlineCallbacks
+    def get_all_songs(self):
+        results = yield defer.gatherResults(
+            [
+                storage.get_all_songs().addCallback(self.patch_songs(storage_id))
+                for storage_id, storage in self.extra_storages.items()
+            ],
+            consumeErrors=True,
+        )
+        songs = [
+            song
+            for song_list in results
+            for song in song_list
+        ]
+        defer.returnValue(songs)
+
+    def get_song(self, pk):
+        try:
+            storage_id, pk = pk.split(':', 1)
+        except ValueError:
+            raise KeyError(pk)
+        storage = self.extra_storages[storage_id]
+        return storage.get_song(pk).addCallback(self.patch_song(storage_id))
+
+    @defer.inlineCallbacks
+    def add_song(self, song):
+        pk = yield self.primary_storage.add_song(song)
+        defer.returnValue('-1:{}'.format(pk))
+
+    def remove_song(self, song):
+        song = copy.copy(song)
+        try:
+            storage_id, song.pk = song.pk.split(':', 1)
+        except ValueError:
+            raise KeyError(song.pk)
+        storage = self.extra_storages[storage_id]
+        return storage.remove_song(song)
+
+    def init(self):
+        return defer.gatherResults(
+            [storage.init() for storage in self.extra_searchable_storages.values()],
+            consumeErrors=True,
+        )
+
+    @defer.inlineCallbacks
+    def search(self, query):
+        results = yield defer.gatherResults(
+            [
+                storage.search(query).addCallback(self.patch_songs(storage_id))
+                for storage_id, storage in self.extra_searchable_storages.items()
+            ],
+            consumeErrors=True,
+        )
+        songs = [
+            song
+            for song_list in results
+            for song in song_list
+        ]
+        defer.returnValue(songs)
 
 
 class StringProducer(object):
